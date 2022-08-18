@@ -3,7 +3,7 @@ from PyPDF2 import PdfMerger, PdfWriter, PdfReader
 import PyPDF2
 from reportlab.pdfgen import canvas
 
-from dir.directory import delete_file, list_docs
+from dir.directory import delete_file, list_doc_paths, list_docs
 
 
 def pdf_merger(pdf_paths, output_path):
@@ -57,15 +57,11 @@ def applyPag(merged_path, pag_path, output_path):
 
 def generate_docs(user_input, output_path):
     bundle_path = user_input
-    document_paths = []
 
-    docs = list_docs(bundle_path)
+    docs = list_doc_paths(bundle_path)
+    print(docs)
 
-    for doc in docs:
-        doc_path = os.path.join(bundle_path, "Documents", doc)
-        document_paths.append(doc_path)
-
-    pdf_merger(document_paths, output_path)
+    pdf_merger(docs, output_path)
 
 
 def get_num_pages(pdf):

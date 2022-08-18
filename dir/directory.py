@@ -24,11 +24,32 @@ def path_exists(path):
 # return list of documents in bundle
 
 
-def list_docs(bundle_path):
+def list_docs(path):
     # todo: handle error
-    docs_path = get_documents_path(bundle_path)
-    docs_dir = os.listdir(docs_path)
+    docs_dir = []
+
+    for d in os.listdir(path):
+        sub_dir_path = os.path.join(path, d)
+        if os.path.isdir(sub_dir_path):
+            sub_dir = os.listdir(sub_dir_path)
+            for s in sub_dir:
+                docs_dir.append(s)
+
     return docs_dir
+
+
+def list_doc_paths(path):
+    doc_paths = []
+
+    for d in os.listdir(path):
+        sub_dir_path = os.path.join(path, d)
+        if os.path.isdir(sub_dir_path):
+            sub_dir = os.listdir(sub_dir_path)
+            for li in sub_dir:
+                doc_path = os.path.join(sub_dir_path, li)
+                doc_paths.append(doc_path)
+
+    return(doc_paths)
 
 
 def delete_file(path):

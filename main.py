@@ -1,10 +1,6 @@
 import os
 import tkinter as tk
-from dir.directory import delete_file, list_docs
 from gui.gui import Gui
-from index.table_gen import gen_table
-from pdf.pdf import applyPag, generate_docs, pagGen, pdf_merger
-from docx import Document
 
 template_index = 'template_index.docx'
 

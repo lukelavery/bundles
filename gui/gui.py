@@ -2,8 +2,6 @@ import tkinter as tk
 from tkinter import filedialog
 from gen import gen
 
-from index.gen_index import gen_index
-
 
 class Gui:
     def __init__(self, master):
