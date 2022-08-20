@@ -31,6 +31,7 @@ def gen_table(dict, doc, path):
     t = tables[3]
     index = 1
     num_pages_list = []
+    cum_page_list = []
 
     doc_names = []
 
@@ -76,15 +77,17 @@ def gen_table(dict, doc, path):
             if num_pages_list[index] > 1:
                 add_text(entry_cell, str(old_cumulative + 1) + ' - ' +
                          str(cumulative), 'centre')
+                cum_page_list.append(old_cumulative + 1)
             else:
                 add_text(entry_cell, str(cumulative), 'centre')
+                cum_page_list.append(cumulative)
             entry_row += 1
             index += 1
         entry_row += 1
 
     document.save(word_doc)
     convert(word_doc, pdf_doc)
-    return doc_names
+    return doc_names, cum_page_list
 
 
 def add_heading(table):

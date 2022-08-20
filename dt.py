@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 
 def short_string_to_date(shortfmt):
@@ -8,6 +8,11 @@ def short_string_to_date(shortfmt):
     day = int(shortfmt[8:])
     d = date(year, month, day)
     return d
+
+
+def long_string_todate(longfmt):
+    date_object = datetime.strptime(longfmt, "%d %B %Y")
+    return date_object
 
 
 def date_to_long_string(d):

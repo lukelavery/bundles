@@ -1,5 +1,6 @@
-import os
-from PyPDF2 import PdfMerger, PdfWriter, PdfReader
+from os import path
+from PyPDF2 import PdfMerger, PdfWriter, PdfReader, PdfFileWriter, PdfFileReader
+from PyPDF2.generic import RectangleObject
 import PyPDF2
 from reportlab.pdfgen import canvas
 
@@ -59,7 +60,6 @@ def generate_docs(user_input, output_path):
     bundle_path = user_input
 
     docs = list_doc_paths(bundle_path)
-    print(docs)
 
     pdf_merger(docs, output_path)
 
@@ -67,3 +67,40 @@ def generate_docs(user_input, output_path):
 def get_num_pages(pdf):
     page_num = PyPDF2.PdfFileReader(pdf).numPages
     return page_num
+
+
+def add_links(pdf, line_objects, output_path):
+    pdf_writer = PdfFileWriter()
+    pdf_reader = PdfFileReader(open(pdf, 'rb'))
+
+    x1, y1, x2, y2 = pdf_reader.getPage(0).mediaBox
+    print(f'x1, x2: {x1, x2}\ny1, y2: {y1,y2}')
+
+    # add each page in pdf to pdf writer
+    num_of_pages = pdf_reader.getNumPages()
+
+    for page in range(num_of_pages):
+        current_page = pdf_reader.getPage(page)
+        pdf_writer.addPage(current_page)
+
+    for line_object in line_objects:
+        pagdest = line_object.page
+        text_objects = line_object.text_objects
+
+        for text_object in text_objects:
+            pagenum = text_object.page
+            x1, y1, x2, y2 = text_object.x1, text_object.y1, text_object.x2, text_object.y2
+            print(x1, y1, x2, y2)
+
+            pdf_writer.addLink(
+                pagenum=pagenum,  # index of the page on which to place the link
+                pagedest=pagdest - 1,  # index of the page to which the link should go
+                # clickable area x1, y1, x2, y2 (starts bottom left corner)
+                rect=RectangleObject([x1, y1, x2, y2]),
+                # border
+                # fit
+            )
+            print(pagenum, pagdest)
+
+    with open(path.abspath(output_path), 'wb') as link_pdf:
+        pdf_writer.write(link_pdf)
