@@ -3,11 +3,8 @@ from tkinter import filedialog
 from gen import gen
 
 
-class Gui:
+class App:
     def __init__(self, master):
-
-        # frm = ttk.Frame(root, padding=10)
-        # frm.grid()
         self.path = ''
         self.entry_text = tk.StringVar()
 
@@ -36,16 +33,16 @@ class Gui:
 
         tk.Button(master,
                   text='Generate',
-                  command=self.get_inputs).grid(row=6,
-                                                column=0,
-                                                sticky=tk.W,
-                                                pady=4)
+                  command=self.generate).grid(row=6,
+                                              column=0,
+                                              sticky=tk.W,
+                                              pady=4)
 
     def get_path(self):
         self.path = filedialog.askdirectory()
         self.entry_text.set(self.path)
 
-    def get_inputs(self):
+    def generate(self):
         context = {
             'location': self.e1.get(),
             'case_num': self.e2.get(),
@@ -53,4 +50,4 @@ class Gui:
             'respondent': self.e4.get(),
             'title': self.e5.get(),
         }
-        gen(self.path, context, True, True)
+        gen(self.path, context, True)

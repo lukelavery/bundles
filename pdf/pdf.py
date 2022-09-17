@@ -3,8 +3,9 @@ from PyPDF2 import PdfMerger, PdfWriter, PdfReader, PdfFileWriter, PdfFileReader
 from PyPDF2.generic import RectangleObject
 import PyPDF2
 from reportlab.pdfgen import canvas
+from text_model import LineObject
 
-from dir.directory import delete_file, list_doc_paths, list_docs
+from dir.directory import list_doc_paths
 
 
 def pdf_merger(pdf_paths, output_path):
@@ -27,9 +28,11 @@ def pagGen(merged_path, output_path):
     pages = len(reader.pages)
 
     for i in range(pages):
+        x1, y1, x2, y2 = reader.getPage(i).mediaBox
+
         page_num = c.getPageNumber()
         text = str(page_num)
-        c.drawString(550, 30, text)
+        c.drawString(x2 - 30, y1 + 30, text)
         c.showPage()
     c.save()
 
@@ -104,3 +107,26 @@ def add_links(pdf, line_objects, output_path):
 
     with open(path.abspath(output_path), 'wb') as link_pdf:
         pdf_writer.write(link_pdf)
+
+
+def get_line_objects(bbox_dict):
+    line_objects = []
+    for v in bbox_dict:
+        line_object = LineObject(v, bbox_dict[v])
+        line_objects.append(line_object)
+
+    return line_objects
+
+
+def is_entry(line_objects, doc_names, pag_nums):
+    print(pag_nums)
+    new_doc_names = doc_names.copy()
+    new_line_objects = []
+    for line_object in line_objects:
+        compiled_text = line_object.compiled_text
+        for doc in new_doc_names:
+            if doc in compiled_text:
+                line_object.page = pag_nums[doc_names.index(doc)]
+                new_line_objects.append(line_object)
+                new_doc_names.remove(doc)
+    return new_line_objects

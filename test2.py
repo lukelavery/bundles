@@ -14,16 +14,6 @@ def get_bbox_dict(index_path):
     path = Path(index_path).expanduser()
 
     def show_ltitem_hierarchy(o: Any, depth=0):
-        """Show location and text of LTItem and all its descendants"""
-        # if depth == 0:
-        #     print('element                        x1  y1  x2  y2   text')
-        #     print('------------------------------ --- --- --- ---- -----')
-
-        # print(
-        #     f'{get_indented_name(o, depth):<30.30s} '
-        #     f'{get_optional_bbox(o)} '
-        #     f'{get_optional_text(o)}'
-        # )
         global index
 
         if isinstance(o, Iterable):

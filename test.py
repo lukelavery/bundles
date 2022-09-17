@@ -16,7 +16,7 @@ def get_dir_dict(path):
 
     for d in os.listdir(path):
         if os.path.isdir(os.path.join(path, d)):
-            directory[d] = os.listdir(os.path.join(path, d))
+            directory[d] = scrape_file_names(os.listdir(os.path.join(path, d)))
 
     return directory
 

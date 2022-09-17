@@ -1,11 +1,10 @@
 from dir.directory import join_paths
 from index.gen_index import gen_index
-from pdf.pdf import add_links, applyPag, generate_docs, pagGen, pdf_merger
+from pdf.pdf import add_links, applyPag, generate_docs, get_line_objects, is_entry, pagGen, pdf_merger
 from test2 import get_bbox_dict
-from text_model import LineObject
 
 
-def gen(path, context, index, bundle):
+def gen(path, context, bundle):
     index_path = join_paths(path, 'index.docx')
     index_pdf_path = join_paths(path, "index.pdf")
     documents_pdf_path = join_paths(path, "documents.pdf")
@@ -28,26 +27,3 @@ def gen_bundle(path, index_pdf_path, documents_pdf_path, output_path, pag_path, 
     line_objects = get_line_objects(bbox_dict)
     new_line_objects = is_entry(line_objects, doc_names, pag_nums)
     add_links(output_path, new_line_objects, link_path)
-
-
-def get_line_objects(bbox_dict):
-    line_objects = []
-    for v in bbox_dict:
-        line_object = LineObject(v, bbox_dict[v])
-        line_objects.append(line_object)
-
-    return line_objects
-
-
-def is_entry(line_objects, doc_names, pag_nums):
-    print(pag_nums)
-    new_doc_names = doc_names.copy()
-    new_line_objects = []
-    for line_object in line_objects:
-        compiled_text = line_object.compiled_text
-        for doc in new_doc_names:
-            if doc in compiled_text:
-                line_object.page = pag_nums[doc_names.index(doc)]
-                new_line_objects.append(line_object)
-                new_doc_names.remove(doc)
-    return new_line_objects
