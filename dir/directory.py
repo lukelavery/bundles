@@ -1,10 +1,44 @@
 import os
 from pathlib import Path
+from dt import short_string_to_long_string
 
 
 def get_dir(x):
     entries = os.listdir(x)
     return entries
+
+
+def get_dir_dict(path):
+    directory = {}
+    index = 0
+
+    for d in os.listdir(path):
+        if os.path.isdir(os.path.join(path, d)):
+            list_date_name = scrape_file_names(
+                os.listdir(os.path.join(path, d)))
+            list_index_date_name = []
+            print(list_date_name)
+            for li in list_date_name:
+                (date, name) = li
+                index = index + 1
+                index_date_name = (index, date, name)
+                list_index_date_name.append(index_date_name)
+            directory[d] = list_index_date_name
+
+    return directory
+
+
+def scrape_file_names(docs):
+    my_tuples = []
+    for doc in docs:
+        date = get_date_from_file(doc)
+        date = short_string_to_long_string(date)
+
+        name = get_name_from_file(doc)
+
+        my_tuple = (date, name)
+        my_tuples.append(my_tuple)
+    return my_tuples
 
 
 def get_parent_dir(path):

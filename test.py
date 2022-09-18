@@ -11,16 +11,6 @@ from pdf.pdf import get_num_pages
 my_path = 'C:/Users/lukel/Desktop/bundle'
 
 
-def get_dir_dict(path):
-    directory = {}
-
-    for d in os.listdir(path):
-        if os.path.isdir(os.path.join(path, d)):
-            directory[d] = scrape_file_names(os.listdir(os.path.join(path, d)))
-
-    return directory
-
-
 def gen_table(dict, doc, path):
     document = Document(doc)
     tables = document.tables
