@@ -1,14 +1,29 @@
-from docx2pdf import convert
 import os
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx2pdf import convert
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from dir.scraper import scrape_file_names
 
-from index.tbl import add_text
 from pdf.pdf import get_num_pages
 
-my_path = 'C:/Users/lukel/Desktop/bundle'
+
+def get_table(doc):
+    # implement search for table
+    tables = doc.tables
+    table = tables[3]
+    return table
+
+
+def add_text(cell, text, alignment):
+    cell.text = text
+    para = cell.paragraphs[0]
+    para_fmt = para.paragraph_format
+    para_fmt.space_before = 76200
+    para_fmt.space_after = 76200
+
+    if alignment == 'centre':
+        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
 
 def gen_table(dict, doc, path):
@@ -31,23 +46,22 @@ def gen_table(dict, doc, path):
         cells = new_row.cells
         add_text(cells[0], e[0:2], None)
         add_text(cells[1], e[2:], None)
-        table_data = scrape_file_names(dict[e])
+        table_data = dict[e]
 
         for i in range(len(table_data)):
-            (date, name) = table_data[i]
+            entry = table_data[i]
             t.add_row()
             new_row = t.rows[-1]
             cells = new_row.cells
 
-            add_text(cells[0], str(index) + '.', None)
-            add_text(cells[1], name, None)
-            add_text(cells[2], date, None)
+            add_text(cells[0], str(entry.tab) + '.', None)
+            add_text(cells[1], entry.name, None)
+            add_text(cells[2], str(entry.date), None)
 
-            num_pages_list.append(get_num_pages(
-                os.path.join(my_path, e, dict[e][i])))
+            num_pages_list.append(entry.pag_num)
             index = index + 1
 
-            doc_names.append(name)
+            doc_names.append(entry.name)
 
         document.save(word_doc)
 
@@ -77,7 +91,7 @@ def gen_table(dict, doc, path):
 
     document.save(word_doc)
     convert(word_doc, pdf_doc)
-    return doc_names, cum_page_list
+    # return doc_names, cum_page_list
 
 
 def add_heading(table):
@@ -100,6 +114,3 @@ def set_table_header_bg_color(cell):
     clShading.set(qn('w:fill'), "D5D5D5")
     tblCellProperties.append(clShading)
     return cell
-
-
-# gen_tabl(dir_dict, "template_index.docx")

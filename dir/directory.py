@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dt import short_string_to_long_string
+from text_model import BundleEntry
 
 
 def get_dir(x):
@@ -8,22 +9,38 @@ def get_dir(x):
     return entries
 
 
+# def get_dir_dict(path):
+#     directory = {}
+#     index = 0
+
+#     for d in os.listdir(path):
+#         if os.path.isdir(os.path.join(path, d)):
+#             list_date_name = scrape_file_names(
+#                 os.listdir(os.path.join(path, d)))
+#             list_index_date_name = []
+#             for li in list_date_name:
+#                 (date, name) = li
+#                 index = index + 1
+#                 index_date_name = (index, date, name)
+#                 list_index_date_name.append(index_date_name)
+#             directory[d] = list_index_date_name
+
+#     return directory
+
 def get_dir_dict(path):
     directory = {}
-    index = 0
+    tab = 1
 
     for d in os.listdir(path):
-        if os.path.isdir(os.path.join(path, d)):
-            list_date_name = scrape_file_names(
-                os.listdir(os.path.join(path, d)))
-            list_index_date_name = []
-            print(list_date_name)
-            for li in list_date_name:
-                (date, name) = li
-                index = index + 1
-                index_date_name = (index, date, name)
-                list_index_date_name.append(index_date_name)
-            directory[d] = list_index_date_name
+        entry_list = []
+        sub_dir = os.path.join(path, d)
+        if os.path.isdir(sub_dir):
+            for f in os.listdir(sub_dir):
+                entry_list.append(BundleEntry(
+                    path=os.path.join(sub_dir, f), tab=tab))
+                tab = tab + 1
+
+            directory[d] = entry_list
 
     return directory
 
@@ -105,3 +122,16 @@ def get_name_from_file(file_name):
 def join_paths(path1, path2):
     new_path = os.path.join(path1, path2)
     return new_path
+
+
+def is_custom_index(input_path):
+    for li in os.listdir(input_path):
+        if li == 'index_template.docx':
+            print("Index!")
+            return True
+
+
+def is_title_page(input_path):
+    for li in os.listdir(input_path):
+        if li == 'title_page.docx':
+            return True
