@@ -5,7 +5,7 @@ from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-from pdf.pdf import get_num_pages
+from pdf import get_num_pages
 
 
 def get_table(doc):
@@ -26,12 +26,12 @@ def add_text(cell, text, alignment):
         para.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
 
-def gen_table(dict, doc, path):
+def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
     document = Document(doc)
     tables = document.tables
 
-    word_doc = os.path.join(path, 'output.docx')
-    pdf_doc = os.path.join(path, 'index.pdf')
+    word_doc = index_doc_path
+    pdf_doc = index_pdf_path
 
     t = tables[3]
     index = 1
@@ -66,6 +66,8 @@ def gen_table(dict, doc, path):
         document.save(word_doc)
 
     convert(word_doc, pdf_doc)
+    self.pb['value'] = 33
+    master.update_idletasks()
 
     index_pag_num = get_num_pages(pdf_doc)
 
@@ -91,7 +93,8 @@ def gen_table(dict, doc, path):
 
     document.save(word_doc)
     convert(word_doc, pdf_doc)
-    # return doc_names, cum_page_list
+    self.pb['value'] = 66
+    return doc_names, cum_page_list
 
 
 def add_heading(table):

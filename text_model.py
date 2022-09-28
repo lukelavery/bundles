@@ -1,6 +1,6 @@
 from datetime import date
 import os
-import PyPDF2
+from PyPDF2 import PdfReader, PdfFileReader
 
 
 class TextObject:
@@ -48,5 +48,5 @@ class BundleEntry:
         return name
 
     def get_num_pages(self):
-        page_num = PyPDF2.PdfFileReader(self.path).numPages
+        page_num = PdfFileReader(self.path).numPages
         return page_num

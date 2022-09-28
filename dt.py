@@ -20,6 +20,10 @@ def date_to_long_string(d):
     return long_string
 
 
+def date_to_ymd(d):
+    return d.strftime("%Y.%m.%d")
+
+
 def short_string_to_long_string(shortfmt):
     d = short_string_to_date(shortfmt)
     longfmt = date_to_long_string(d)

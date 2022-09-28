@@ -1,4 +1,4 @@
-from dir.directory import get_dir_dict
+from directory import get_dir_dict
 from test import gen_table
 
 
