@@ -3,10 +3,16 @@ from PyPDF2 import PdfMerger, PdfWriter, PdfReader, PdfFileWriter, PdfFileReader
 from PyPDF2.generic import RectangleObject
 import PyPDF2
 from reportlab.pdfgen import canvas
-from test2 import get_bbox_dict
-from text_model import LineObject
+from models import LineObject
 
 from directory import list_doc_paths
+from pathlib import Path
+from typing import Iterable, Any
+
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextBoxHorizontal, LTPage
+
+from models import TextObject
 
 
 def pdf_merger(pdf_paths, output_path):
@@ -134,3 +140,41 @@ def is_entry(line_objects, doc_names, pag_nums):
                 new_line_objects.append(line_object)
                 new_doc_names.remove(doc)
     return new_line_objects
+
+
+def get_bbox_dict(index_path):
+    index = -1
+    text_objects = []
+    path = Path(index_path).expanduser()
+
+    def show_ltitem_hierarchy(o: Any, index, depth=0):
+
+        if isinstance(o, Iterable):
+            for i in o:
+                if isinstance(i, LTPage):
+                    index += 1
+                    print("page")
+                if isinstance(i, LTTextBoxHorizontal):
+                    x1, y1, x2, y2 = i.bbox
+                    text_object = TextObject(
+                        i.get_text().strip(), x1, y1, x2, y2, index)
+                    text_objects.append(text_object)
+                show_ltitem_hierarchy(i, index, depth=depth + 1)
+
+    def sort_list(list):
+        list.sort(key=lambda x: (x.page, 1/x.y1))
+        y1_dict = {}
+        for li in list:
+            y1 = li.y1
+
+            if y1 in y1_dict:
+                y1_dict[y1].append(li)
+            else:
+                y1_dict[y1] = [li]
+        return y1_dict
+
+    pages = extract_pages(path)
+
+    show_ltitem_hierarchy(pages, index)
+
+    return sort_list(text_objects)

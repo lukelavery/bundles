@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dt import short_string_to_long_string
-from text_model import BundleEntry
+from models import BundleEntry
 
 
 def get_dir(x):

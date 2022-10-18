@@ -94,6 +94,7 @@ def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
     document.save(word_doc)
     convert(word_doc, pdf_doc)
     self.pb['value'] = 66
+    master.update_idletasks()
     return doc_names, cum_page_list
 
 
