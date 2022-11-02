@@ -43,7 +43,6 @@ class BundleEntry:
 
     def get_name_from_file(self):
         name = self.file_name[13:]
-        # only works when len(file_extension) = 3
         name = name[:-4]
         return name
 

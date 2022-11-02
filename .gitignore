@@ -1,0 +1,7 @@
+dist
+__pycache__
+build
+*pyc
+*toc
+main.spec
+test.py
