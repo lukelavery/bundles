@@ -4,15 +4,20 @@ from docx2pdf import convert
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-
 from pdf import get_num_pages
+import constants as const
 
 
 def get_table(doc):
-    # implement search for table
-    tables = doc.tables
-    table = tables[3]
-    return table
+    for t in doc.tables:
+        text = tuple(get_cell_text(t.row_cells(0)))
+        if text == const.TABLE_HEADINGS:
+            return t
+
+
+def get_cell_text(row_cells):
+    for c in row_cells:
+        yield c.text
 
 
 def add_text(cell, text, alignment):

@@ -1,11 +1,9 @@
 from datetime import date
 import os
 import tempfile
-
 import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
 from tkinter import filedialog
-
 import constants as const
 from directory import get_dir_dict, join_paths
 from doc import gen_table

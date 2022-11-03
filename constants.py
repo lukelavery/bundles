@@ -13,3 +13,5 @@ H1_FONT = ('Arial', 12, 'bold')
 
 BUTTON_1_BG_COLOR = '#DCDCDC'
 BUTTON_2_FG_COLOR = 'white'
+
+TABLE_HEADINGS = ('No.', 'Document', 'Date', 'Page No.')
