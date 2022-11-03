@@ -216,20 +216,20 @@ class App:
 
     def gen_bundle(self, master, index_pdf_path, documents_pdf_path, output_path, pag_path, link_path):
         generate_docs(self.input_path, documents_pdf_path)
-        self.pb['value'] = 70
-        master.update_idletasks()
+        self.update_pb(master, 70)
         pdf_merger([index_pdf_path, documents_pdf_path], output_path)
-        self.pb['value'] = 75
-        master.update_idletasks()
+        self.update_pb(master, 75)
         pagGen(output_path, pag_path)
-        self.pb['value'] = 80
-        master.update_idletasks()
+        self.update_pb(master, 80)
         applyPag(output_path, pag_path, output_path)
-        self.pb['value'] = 85
-        master.update_idletasks()
+        self.update_pb(master, 85)
         bbox_dict = get_bbox_dict(index_pdf_path)
         line_objects = get_line_objects(bbox_dict)
         new_line_objects = is_entry(
             line_objects, self.doc_names, self.pag_nums)
         add_links(output_path, new_line_objects, link_path)
-        self.pb['value'] = 100
+        self.update_pb(master, 100)
+
+    def update_pb(self, master, v):
+        self.pb['value'] = v
+        master.update_idletasks()

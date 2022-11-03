@@ -34,7 +34,6 @@ def add_text(cell, text, alignment):
 
 def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
     document = Document(doc)
-    tables = document.tables
 
     word_doc = index_doc_path
     pdf_doc = index_pdf_path
@@ -105,22 +104,20 @@ def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
 
 
 def add_heading(table):
+    def set_table_header_bg_color(cell):
+        """
+        set background shading for Header Rows
+        """
+        tblCell = cell._tc
+        tblCellProperties = tblCell.get_or_add_tcPr()
+        clShading = OxmlElement('w:shd')
+        # Hex of Dark Blue Shade {R:0x00, G:0x51, B:0x9E}
+        clShading.set(qn('w:fill'), "D5D5D5")
+        tblCellProperties.append(clShading)
+        return cell
+
     table.add_row()
-    row = table.rows[-1]
-    cells = row.cells
+    cells = table.rows[-1].cells
 
     for cell in cells:
         set_table_header_bg_color(cell)
-
-
-def set_table_header_bg_color(cell):
-    """
-    set background shading for Header Rows
-    """
-    tblCell = cell._tc
-    tblCellProperties = tblCell.get_or_add_tcPr()
-    clShading = OxmlElement('w:shd')
-    # Hex of Dark Blue Shade {R:0x00, G:0x51, B:0x9E}
-    clShading.set(qn('w:fill'), "D5D5D5")
-    tblCellProperties.append(clShading)
-    return cell
