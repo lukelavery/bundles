@@ -1,4 +1,3 @@
-import os
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx2pdf import convert
 from docx import Document
@@ -32,7 +31,7 @@ def add_text(cell, text, alignment):
     format_text()
 
 
-def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
+def gen_table(self, master, bundle, doc, path, index_pdf_path, index_doc_path):
     document = Document(doc)
 
     word_doc = index_doc_path
@@ -45,13 +44,15 @@ def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
 
     doc_names = []
 
-    for e in dict:
+    sections = bundle.get_sections()
+
+    for e in sections:
         add_heading(t)
         new_row = t.rows[-1]
         cells = new_row.cells
         add_text(cells[0], e.section + '.', None)
         add_text(cells[1], e.name, None)
-        table_data = dict[e]
+        table_data = bundle.get_entries(e)
 
         for i in range(len(table_data)):
             entry = table_data[i]
@@ -80,8 +81,8 @@ def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
     entry_row = 2
     cumulative = index_pag_num
 
-    for e in dict:
-        for li in dict[e]:
+    for e in sections:
+        for li in bundle.get_entries(e):
             entry_cell = t.rows[entry_row].cells[3]
             old_cumulative = cumulative
             cumulative += num_pages_list[index]
@@ -101,6 +102,34 @@ def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
     self.pb['value'] = 66
     master.update_idletasks()
     return doc_names, cum_page_list
+
+# def insert_entries(dir_dict, table):
+#     for e in dir_dict:
+#         add_heading(table)
+#         new_row = table.rows[-1]
+#         cells = new_row.cells
+#         add_text(cells[0], e.section + '.', None)
+#         add_text(cells[1], e.name, None)
+#         table_data = dir_dict[e]
+
+#         for i in range(len(table_data)):
+#             entry = table_data[i]
+#             t.add_row()
+#             new_row = t.rows[-1]
+#             cells = new_row.cells
+
+#             add_text(cells[0], str(entry.tab) + '.', None)
+#             add_text(cells[1], entry.name, None)
+#             add_text(cells[2], str(entry.date), None)
+
+#             num_pages_list.append(entry.pag_num)
+#             index = index + 1
+
+#             doc_names.append(entry.name)
+
+#         document.save(word_doc)
+
+#     convert(word_doc, pdf_doc)
 
 
 def add_heading(table):

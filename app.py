@@ -5,9 +5,10 @@ import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
 from tkinter import filedialog
 import constants as const
-from directory import get_dir_dict, join_paths
+from directory import join_paths
 from doc import gen_table
 from dt import date_to_ymd
+from models import Bundle
 from pdf import add_links, applyPag, generate_docs, get_bbox_dict, get_line_objects, is_entry, pagGen, pdf_merger
 
 
@@ -15,7 +16,6 @@ class App:
     def __init__(self, master):
         self.input_path = ''
         self.output_path = ''
-        self.dir_dict = None
         self.index_path = ''
         self.bundle_name = ''
 
@@ -173,14 +173,14 @@ class App:
 
     def get_data(self):
         index = 0
-        self.dir_dict = get_dir_dict(self.input_path)
+        self.bundle = Bundle(self.input_path)
 
         self.tree.delete(*self.tree.get_children())
 
-        for key in self.dir_dict:
+        for key in self.bundle.get_sections():
             self.tree.insert('', index='end', iid=index,
                              values=(key.section, key.name))
-            data = self.dir_dict[key]
+            data = self.bundle.get_entries(key)
             parent_index = index
             index = index + 1
 
@@ -201,11 +201,11 @@ class App:
         bundle_path = join_paths(tmpdir.name, "bundle.pdf")
         pag_path = join_paths(tmpdir.name, "pagination.pdf")
         output_path = join_paths(self.output_path, self.bundle_name)
-        if self.dir_dict != None and self.output_path != '':
+        if self.bundle != None and self.output_path != '':
             self.pb['value'] = 10
             master.update_idletasks()
             self.doc_names, self.pag_nums = gen_table(self, master,
-                                                      self.dir_dict, self.index_path, self.input_path, index_pdf_path, index_doc_path)
+                                                      self.bundle, self.index_path, self.input_path, index_pdf_path, index_doc_path)
             self.gen_bundle(master, index_pdf_path, documents_pdf_path,
                             bundle_path, pag_path, output_path)
             tmpdir.cleanup()

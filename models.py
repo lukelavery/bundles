@@ -55,9 +55,36 @@ class BundleSection:
     def __init__(self, path):
         self.dir_name = os.path.split(path)[1]
         self.section, self.name = self.scrape_dir_name()
+        self.path = path
 
     def scrape_dir_name(self):
         dir_name = self.dir_name
         for i in range(len(dir_name)):
             if dir_name[i] == '.' and dir_name[i + 1] == ' ':
                 return dir_name[:i], dir_name[i+2:]
+
+
+class Bundle:
+    def __init__(self, path):
+        self.data = {}
+        tab = 1
+
+        for d in os.listdir(path):
+            entry_list = []
+            sub_dir = os.path.join(path, d)
+
+            if os.path.isdir(sub_dir):
+                section = BundleSection(sub_dir)
+
+                for f in os.listdir(sub_dir):
+                    entry_list.append(BundleEntry(
+                        path=os.path.join(sub_dir, f), tab=tab))
+                    tab = tab + 1
+
+                self.data[section] = entry_list
+
+    def get_sections(self):
+        return list(self.data.keys())
+
+    def get_entries(self, section):
+        return self.data[section]
