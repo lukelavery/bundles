@@ -57,3 +57,4 @@ This software uses the following open source packages:
 * [python-docx](https://python-docx.readthedocs.io/en/latest/)
 * [pdfminer.six](https://pdfminersix.readthedocs.io/en/latest/)
 * [The ReportLab Toolkit](https://www.reportlab.com/)
+* [docx2pdf](https://github.com/AlJohri/docx2pdf)
