@@ -1,0 +1,14 @@
+cffi==1.15.1
+charset-normalizer==3.0.0
+colorama==0.4.6
+cryptography==38.0.3
+docx2pdf==0.1.8
+lxml==4.9.1
+pdfminer.six==20220524
+Pillow==9.3.0
+pycparser==2.21
+PyPDF2==2.11.1
+python-docx==0.8.11
+pywin32==304
+reportlab==3.6.12
+tqdm==4.64.1
