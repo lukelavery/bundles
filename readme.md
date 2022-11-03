@@ -36,7 +36,7 @@ parent_folder
 * 'folder1', 'folder2' etc. - these subfolders correspond to the sections in the generated index. All documents in the bundle must be included inside subfolders within 'parent_folder'.
 * 'file1.pdf', 'file2.pdf' etc. - these files are the individual entries in the bundle. They must be pdf documents.
 
-### Naming conventions
+#### Naming conventions
 
 * 'parent_folder' - this will be the name of your bundle and can be changed to anything
 * 'index_template.docx' - the name of this documents must not be changed or the software will resort to a blank word document to generate your index.
