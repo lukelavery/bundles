@@ -17,7 +17,6 @@ class App:
         self.input_path = ''
         self.output_path = ''
         self.index_path = ''
-        self.bundle_name = ''
 
         self.decl(master)
         self.styles(master)
@@ -163,8 +162,6 @@ class App:
     def get_input_path(self):
         self.input_path = filedialog.askdirectory()
         self.input_entry_text.set(self.input_path)
-        self.bundle_name = date_to_ymd(
-            date.today()) + ' ' + os.path.basename(self.input_path) + '.pdf'
         self.index_path = os.path.join(self.input_path, 'index_template.docx')
 
     def get_output_path(self):
@@ -200,7 +197,7 @@ class App:
         documents_pdf_path = join_paths(tmpdir.name, "documents.pdf")
         bundle_path = join_paths(tmpdir.name, "bundle.pdf")
         pag_path = join_paths(tmpdir.name, "pagination.pdf")
-        output_path = join_paths(self.output_path, self.bundle_name)
+        output_path = join_paths(self.output_path, self.bundle.name)
         if self.bundle != None and self.output_path != '':
             self.pb['value'] = 10
             master.update_idletasks()

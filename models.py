@@ -2,6 +2,8 @@ from datetime import date
 import os
 from PyPDF2 import PdfReader, PdfFileReader
 
+from dt import date_to_ymd
+
 
 class TextObject:
     def __init__(self, text, x1, y1, x2, y2, page) -> None:
@@ -67,6 +69,8 @@ class BundleSection:
 class Bundle:
     def __init__(self, path):
         self.data = {}
+        self.name = date_to_ymd(
+            date.today()) + ' ' + os.path.basename(path) + '.pdf'
         tab = 1
 
         for d in os.listdir(path):
