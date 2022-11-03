@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dt import short_string_to_long_string
-from models import BundleEntry
+from models import BundleEntry, BundleSection
 
 
 def get_dir(x):
@@ -9,40 +9,25 @@ def get_dir(x):
     return entries
 
 
-# def get_dir_dict(path):
-#     directory = {}
-#     index = 0
-
-#     for d in os.listdir(path):
-#         if os.path.isdir(os.path.join(path, d)):
-#             list_date_name = scrape_file_names(
-#                 os.listdir(os.path.join(path, d)))
-#             list_index_date_name = []
-#             for li in list_date_name:
-#                 (date, name) = li
-#                 index = index + 1
-#                 index_date_name = (index, date, name)
-#                 list_index_date_name.append(index_date_name)
-#             directory[d] = list_index_date_name
-
-#     return directory
-
 def get_dir_dict(path):
-    directory = {}
+    dir_dict = {}
     tab = 1
 
     for d in os.listdir(path):
         entry_list = []
         sub_dir = os.path.join(path, d)
+
         if os.path.isdir(sub_dir):
+            section = BundleSection(sub_dir)
+
             for f in os.listdir(sub_dir):
                 entry_list.append(BundleEntry(
                     path=os.path.join(sub_dir, f), tab=tab))
                 tab = tab + 1
 
-            directory[d] = entry_list
+            dir_dict[section] = entry_list
 
-    return directory
+    return dir_dict
 
 
 def scrape_file_names(docs):
@@ -100,7 +85,7 @@ def list_doc_paths(path):
                 doc_path = os.path.join(sub_dir_path, li)
                 doc_paths.append(doc_path)
 
-    return(doc_paths)
+    return (doc_paths)
 
 
 def delete_file(path):

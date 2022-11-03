@@ -150,12 +150,12 @@ class App:
 
     def init_tree(self):
         self.tree['columns'] = ("Tab", "Name", "Date")
-        self.tree.column("#0", minwidth=25, width=125)
+        self.tree.column("#0", width=0)
         self.tree.column("Tab", width=30)
-        self.tree.column("Name", width=200)
-        self.tree.column("Date", width=100)
+        self.tree.column("Name", width=300)
+        self.tree.column("Date", width=150)
 
-        self.tree.heading("#0", text="Section")
+        self.tree.heading("#0")
         self.tree.heading("Tab", text="Tab")
         self.tree.heading("Name", text="Name")
         self.tree.heading("Date", text="Date")
@@ -178,7 +178,8 @@ class App:
         self.tree.delete(*self.tree.get_children())
 
         for key in self.dir_dict:
-            self.tree.insert('', index='end', iid=index, text=key)
+            self.tree.insert('', index='end', iid=index,
+                             values=(key.section, key.name))
             data = self.dir_dict[key]
             parent_index = index
             index = index + 1

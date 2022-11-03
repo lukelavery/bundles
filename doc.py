@@ -9,26 +9,27 @@ import constants as const
 
 
 def get_table(doc):
+    def get_cell_text(row_cells):
+        for c in row_cells:
+            yield c.text
+
     for t in doc.tables:
-        text = tuple(get_cell_text(t.row_cells(0)))
-        if text == const.TABLE_HEADINGS:
+        if tuple(get_cell_text(t.row_cells(0))) == const.TABLE_HEADINGS:
             return t
 
 
-def get_cell_text(row_cells):
-    for c in row_cells:
-        yield c.text
-
-
 def add_text(cell, text, alignment):
-    cell.text = text
-    para = cell.paragraphs[0]
-    para_fmt = para.paragraph_format
-    para_fmt.space_before = 76200
-    para_fmt.space_after = 76200
+    def format_text():
+        para = cell.paragraphs[0]
+        para_fmt = para.paragraph_format
+        para_fmt.space_before = 76200
+        para_fmt.space_after = 76200
 
-    if alignment == 'centre':
-        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        if alignment == 'centre':
+            para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    cell.text = text
+    format_text()
 
 
 def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
@@ -38,7 +39,7 @@ def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
     word_doc = index_doc_path
     pdf_doc = index_pdf_path
 
-    t = tables[3]
+    t = get_table(document)
     index = 1
     num_pages_list = []
     cum_page_list = []
@@ -49,8 +50,8 @@ def gen_table(self, master, dict, doc, path, index_pdf_path, index_doc_path):
         add_heading(t)
         new_row = t.rows[-1]
         cells = new_row.cells
-        add_text(cells[0], e[0:2], None)
-        add_text(cells[1], e[2:], None)
+        add_text(cells[0], e.section + '.', None)
+        add_text(cells[1], e.name, None)
         table_data = dict[e]
 
         for i in range(len(table_data)):

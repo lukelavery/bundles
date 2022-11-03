@@ -49,3 +49,15 @@ class BundleEntry:
     def get_num_pages(self):
         page_num = PdfFileReader(self.path).numPages
         return page_num
+
+
+class BundleSection:
+    def __init__(self, path):
+        self.dir_name = os.path.split(path)[1]
+        self.section, self.name = self.scrape_dir_name()
+
+    def scrape_dir_name(self):
+        dir_name = self.dir_name
+        for i in range(len(dir_name)):
+            if dir_name[i] == '.' and dir_name[i + 1] == ' ':
+                return dir_name[:i], dir_name[i+2:]
