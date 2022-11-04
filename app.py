@@ -14,9 +14,7 @@ from pdf import add_links, applyPag, generate_docs, get_bbox_dict, get_line_obje
 
 class App:
     def __init__(self, master):
-        self.input_path = ''
-        self.output_path = ''
-        self.index_path = ''
+        self.paths = {}
 
         self.decl(master)
         self.styles(master)
@@ -160,17 +158,18 @@ class App:
         self.tree.heading("Date", text="Date")
 
     def get_input_path(self):
-        self.input_path = filedialog.askdirectory()
-        self.input_entry_text.set(self.input_path)
-        self.index_path = os.path.join(self.input_path, 'index_template.docx')
+        self.paths['input_path'] = filedialog.askdirectory()
+        self.input_entry_text.set(self.paths['input_path'])
+        self.paths['index_path'] = os.path.join(
+            self.paths['input_path'], 'index_template.docx')
 
     def get_output_path(self):
-        self.output_path = filedialog.askdirectory()
-        self.output_entry_text.set(self.output_path)
+        self.paths['output_path'] = filedialog.askdirectory()
+        self.output_entry_text.set(self.paths['output_path'])
 
     def get_data(self):
         index = 0
-        self.bundle = Bundle(self.input_path)
+        self.bundle = Bundle(self.paths['input_path'])
 
         self.tree.delete(*self.tree.get_children())
 
@@ -191,42 +190,56 @@ class App:
             self.tree.item(child, open=True)
 
     def generate(self, master):
-        tmpdir = tempfile.TemporaryDirectory()
-        index_pdf_path = join_paths(tmpdir.name, "index.pdf")
-        index_doc_path = join_paths(tmpdir.name, "index.docx")
-        documents_pdf_path = join_paths(tmpdir.name, "documents.pdf")
-        bundle_path = join_paths(tmpdir.name, "bundle.pdf")
-        pag_path = join_paths(tmpdir.name, "pagination.pdf")
-        output_path = join_paths(self.output_path, self.bundle.name)
-        if self.bundle != None and self.output_path != '':
+        tmpdir = self.temp_paths()
+
+        if self.bundle != None and self.paths['output_path'] != '':
             self.pb['value'] = 10
             master.update_idletasks()
             self.doc_names, self.pag_nums = gen_table(self, master,
-                                                      self.bundle, self.index_path, self.input_path, index_pdf_path, index_doc_path)
-            self.gen_bundle(master, index_pdf_path, documents_pdf_path,
-                            bundle_path, pag_path, output_path)
+                                                      self.bundle, self.paths['index_path'], self.paths['input_path'], self.paths['index_pdf_path'], self.paths['index_doc_path'])
+            self.gen_bundle(master)
             tmpdir.cleanup()
-            os.startfile(self.output_path)
+            os.startfile(self.paths['output_path'])
 
         else:
             print('No Data!')
 
-    def gen_bundle(self, master, index_pdf_path, documents_pdf_path, output_path, pag_path, link_path):
-        generate_docs(self.input_path, documents_pdf_path)
+    def gen_bundle(self, master):
+        generate_docs(self.paths['input_path'],
+                      self.paths['documents_pdf_path'])
         self.update_pb(master, 70)
-        pdf_merger([index_pdf_path, documents_pdf_path], output_path)
+        pdf_merger([self.paths['index_pdf_path'],
+                   self.paths['documents_pdf_path']], self.paths['bundle_path'])
         self.update_pb(master, 75)
-        pagGen(output_path, pag_path)
+        pagGen(self.paths['bundle_path'], self.paths['pag_path'])
         self.update_pb(master, 80)
-        applyPag(output_path, pag_path, output_path)
+        applyPag(self.paths['bundle_path'],
+                 self.paths['pag_path'], self.paths['bundle_path'])
         self.update_pb(master, 85)
-        bbox_dict = get_bbox_dict(index_pdf_path)
+        bbox_dict = get_bbox_dict(self.paths['index_pdf_path'])
         line_objects = get_line_objects(bbox_dict)
         new_line_objects = is_entry(
             line_objects, self.doc_names, self.pag_nums)
-        add_links(output_path, new_line_objects, link_path)
+        add_links(self.paths['bundle_path'],
+                  new_line_objects, self.paths['output_path'])
         self.update_pb(master, 100)
 
     def update_pb(self, master, v):
         self.pb['value'] = v
         master.update_idletasks()
+
+    def temp_paths(self):
+        tmpdir = tempfile.TemporaryDirectory()
+
+        self.paths.update({
+            'index_pdf_path': join_paths(tmpdir.name, "index.pdf"),
+            'index_doc_path': join_paths(tmpdir.name, "index.docx"),
+            'documents_pdf_path': join_paths(
+                tmpdir.name, "documents.pdf"),
+            'bundle_path': join_paths(tmpdir.name, "bundle.pdf"),
+            'pag_path': join_paths(tmpdir.name, "pagination.pdf"),
+            'output_path': join_paths(
+                self.paths['output_path'], self.bundle.name)
+        })
+
+        return tmpdir
