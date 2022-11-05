@@ -1,4 +1,3 @@
-from datetime import date
 import os
 import tempfile
 import tkinter as tk
@@ -6,8 +5,6 @@ from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
 from tkinter import filedialog
 import constants as const
 from directory import join_paths
-from doc import gen_table
-from dt import date_to_ymd
 from models import Bundle
 from pdf import add_links, applyPag, generate_docs, get_bbox_dict, get_line_objects, is_entry, pagGen, pdf_merger
 
@@ -169,7 +166,8 @@ class App:
 
     def get_data(self):
         index = 0
-        self.bundle = Bundle(self.paths['input_path'])
+        self.bundle = Bundle(
+            self.paths['input_path'], self.paths['index_path'])
 
         self.tree.delete(*self.tree.get_children())
 
@@ -190,19 +188,26 @@ class App:
             self.tree.item(child, open=True)
 
     def generate(self, master):
-        tmpdir = self.temp_paths()
+        tmpdir = self.get_tmpdir()
 
         if self.bundle != None and self.paths['output_path'] != '':
             self.pb['value'] = 10
             master.update_idletasks()
-            self.doc_names, self.pag_nums = gen_table(self, master,
-                                                      self.bundle, self.paths['index_path'], self.paths['input_path'], self.paths['index_pdf_path'], self.paths['index_doc_path'])
-            self.gen_bundle(master)
+            self.gen_table(master)
+            # self.gen_bundle(master)
             tmpdir.cleanup()
-            os.startfile(self.paths['output_path'])
+            # os.startfile(self.paths['output_path'])
 
         else:
             print('No Data!')
+
+    def gen_table(self, master):
+        self.bundle.index.input_table_data(self.bundle.data)
+        self.bundle.index.input_pag_nums(self.bundle, 1)
+        self.bundle.index.save(
+            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.docx')
+        self.bundle.index.convert(
+            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf')
 
     def gen_bundle(self, master):
         generate_docs(self.paths['input_path'],
@@ -228,7 +233,7 @@ class App:
         self.pb['value'] = v
         master.update_idletasks()
 
-    def temp_paths(self):
+    def get_tmpdir(self):
         tmpdir = tempfile.TemporaryDirectory()
 
         self.paths.update({

@@ -31,6 +31,32 @@ def add_text(cell, text, alignment):
     format_text()
 
 
+# def gen_table(self, master):
+#     doc = Document(self.paths['index_path'])
+#     input_table_data(doc, self.bundle.data)
+#     convert(doc, pdf_doc)
+#     self.update_pb(master, 33)
+#     input_pag_nums(doc, self.bundle.data)
+
+
+def add_entry(table, entry):
+    table.add_row()
+    cells = table.rows[-1].cells
+    add_text(cells[0], str(entry.tab) + '.', None)
+    add_text(cells[1], entry.name, None)
+    add_text(cells[2], str(entry.date), None)
+
+
+def input_table_data(doc, bundle_data):
+    table = get_table(doc)
+
+    for key in bundle_data:
+        add_heading(table, key)
+
+        for entry in bundle_data[key]:
+            add_entry(table, entry)
+
+
 def gen_table(self, master, bundle, doc, path, index_pdf_path, index_doc_path):
     document = Document(doc)
 
@@ -103,36 +129,45 @@ def gen_table(self, master, bundle, doc, path, index_pdf_path, index_doc_path):
     master.update_idletasks()
     return doc_names, cum_page_list
 
-# def insert_entries(dir_dict, table):
-#     for e in dir_dict:
-#         add_heading(table)
-#         new_row = table.rows[-1]
-#         cells = new_row.cells
-#         add_text(cells[0], e.section + '.', None)
-#         add_text(cells[1], e.name, None)
-#         table_data = dir_dict[e]
 
-#         for i in range(len(table_data)):
-#             entry = table_data[i]
-#             t.add_row()
-#             new_row = t.rows[-1]
-#             cells = new_row.cells
+def input_pag_nums(doc, bundle, offset):
+    table = get_table(doc)
+    entry_cell = table.rows[entry_row].cells[3]
+    entry_row = 2
 
-#             add_text(cells[0], str(entry.tab) + '.', None)
-#             add_text(cells[1], entry.name, None)
-#             add_text(cells[2], str(entry.date), None)
-
-#             num_pages_list.append(entry.pag_num)
-#             index = index + 1
-
-#             doc_names.append(entry.name)
-
-#         document.save(word_doc)
-
-#     convert(word_doc, pdf_doc)
+    for key in bundle.data:
+        for value in bundle.data[key]:
+            if value.pag_num > 1:
+                add_text(entry_cell, str(offset + 1) + ' - ' +
+                         str(offset + value.pag_num), 'centre')
+                offset += value.pag_num
+            else:
+                offset += value.pag_num
+                add_text(entry_cell, str(offset), 'centre')
+            entry_row += 1
+        entry_row += 1
 
 
-def add_heading(table):
+# def add_heading(table):
+#     def set_table_header_bg_color(cell):
+#         """
+#         set background shading for Header Rows
+#         """
+#         tblCell = cell._tc
+#         tblCellProperties = tblCell.get_or_add_tcPr()
+#         clShading = OxmlElement('w:shd')
+#         # Hex of Dark Blue Shade {R:0x00, G:0x51, B:0x9E}
+#         clShading.set(qn('w:fill'), "D5D5D5")
+#         tblCellProperties.append(clShading)
+#         return cell
+
+#     table.add_row()
+#     cells = table.rows[-1].cells
+
+#     for cell in cells:
+#         set_table_header_bg_color(cell)
+
+def add_heading(table, e):
     def set_table_header_bg_color(cell):
         """
         set background shading for Header Rows
@@ -140,13 +175,14 @@ def add_heading(table):
         tblCell = cell._tc
         tblCellProperties = tblCell.get_or_add_tcPr()
         clShading = OxmlElement('w:shd')
-        # Hex of Dark Blue Shade {R:0x00, G:0x51, B:0x9E}
         clShading.set(qn('w:fill'), "D5D5D5")
         tblCellProperties.append(clShading)
         return cell
 
     table.add_row()
     cells = table.rows[-1].cells
-
     for cell in cells:
         set_table_header_bg_color(cell)
+
+    add_text(cells[0], e.section + '.', None)
+    add_text(cells[1], e.name, None)

@@ -4,14 +4,11 @@ from PyPDF2.generic import RectangleObject
 import PyPDF2
 from reportlab.pdfgen import canvas
 from models import LineObject
-
 from directory import list_doc_paths
 from pathlib import Path
 from typing import Iterable, Any
-
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextBoxHorizontal, LTPage
-
 from models import TextObject
 
 
