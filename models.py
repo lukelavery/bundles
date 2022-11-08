@@ -59,10 +59,6 @@ class BundleEntry:
         name = name[:-4]
         return name
 
-    # def get_num_pages(self):
-    #     page_num = PdfFileReader(self.path).numPages
-    #     return page_num
-
 
 class BundleSection:
     def __init__(self, path):
