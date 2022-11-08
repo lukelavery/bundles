@@ -61,9 +61,6 @@ def applyPag(merged_path, pag_path, output_path):
     with open(output_path, "wb") as fp:
         writer.write(fp)
 
-    # delete_file(merged_path)
-    # delete_file(pag_path)
-
 
 def generate_docs(user_input, output_path):
     bundle_path = user_input
@@ -150,7 +147,6 @@ def get_bbox_dict(index_path):
             for i in o:
                 if isinstance(i, LTPage):
                     index += 1
-                    print("page")
                 if isinstance(i, LTTextBoxHorizontal):
                     x1, y1, x2, y2 = i.bbox
                     text_object = TextObject(
@@ -158,10 +154,10 @@ def get_bbox_dict(index_path):
                     text_objects.append(text_object)
                 show_ltitem_hierarchy(i, index, depth=depth + 1)
 
-    def sort_list(list):
-        list.sort(key=lambda x: (x.page, 1/x.y1))
+    def sort_list(text_objects):
+        text_objects.sort(key=lambda x: (x.page, 1/x.y1))
         y1_dict = {}
-        for li in list:
+        for li in text_objects:
             y1 = li.y1
 
             if y1 in y1_dict:

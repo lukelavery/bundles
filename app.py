@@ -194,7 +194,7 @@ class App:
             self.pb['value'] = 10
             master.update_idletasks()
             self.gen_table(master)
-            # self.gen_bundle(master)
+            self.gen_bundle()
             tmpdir.cleanup()
             # os.startfile(self.paths['output_path'])
 
@@ -209,25 +209,14 @@ class App:
         self.bundle.index.convert(
             'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf')
 
-    def gen_bundle(self, master):
-        generate_docs(self.paths['input_path'],
-                      self.paths['documents_pdf_path'])
-        self.update_pb(master, 70)
-        pdf_merger([self.paths['index_pdf_path'],
-                   self.paths['documents_pdf_path']], self.paths['bundle_path'])
-        self.update_pb(master, 75)
-        pagGen(self.paths['bundle_path'], self.paths['pag_path'])
-        self.update_pb(master, 80)
-        applyPag(self.paths['bundle_path'],
-                 self.paths['pag_path'], self.paths['bundle_path'])
-        self.update_pb(master, 85)
-        bbox_dict = get_bbox_dict(self.paths['index_pdf_path'])
-        line_objects = get_line_objects(bbox_dict)
-        new_line_objects = is_entry(
-            line_objects, self.doc_names, self.pag_nums)
-        add_links(self.paths['bundle_path'],
-                  new_line_objects, self.paths['output_path'])
-        self.update_pb(master, 100)
+    def gen_bundle(self):
+        # self.bundle.documents.merge_documents(self.paths['documents_pdf_path'])
+        self.bundle.documents.merge_documents(
+            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test2.pdf')
+        self.bundle.documents.paginate('C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test3.pdf',
+                                       'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test4.pdf')
+        self.bundle.documents.hyperlink('C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf',
+                                        'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test4.pdf', 'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test5.pdf')
 
     def update_pb(self, master, v):
         self.pb['value'] = v
