@@ -4,21 +4,19 @@ import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
 from tkinter import filedialog
 import constants as const
-from directory import join_paths
 from models import Bundle
 
 
 class App:
     def __init__(self, master):
-        self.paths = {}
-
         self.decl(master)
         self.styles(master)
         self.layout()
-
         self.init_tree()
 
     def decl(self, master):
+        """Declare all tkinter variables inside the main application."""
+
         self.input_entry_text = tk.StringVar()
         self.output_entry_text = tk.StringVar()
         self.style = ttk.Style()
@@ -76,6 +74,8 @@ class App:
         )
 
     def layout(self):
+        """Position all tkinter variables inside the main application."""
+
         # background
         self.bg_label.place(relx=1.0, rely=0.0, anchor='ne')
 
@@ -110,6 +110,8 @@ class App:
         self.pb_frame.pack(pady=(25, 0))
 
     def styles(self, master):
+        """Style all tkinter variables inside the main application."""
+
         self.style.theme_use('vista')
 
         # background
@@ -142,6 +144,8 @@ class App:
                             foreground=const.BUTTON_2_FG_COLOR, font=const.H1_FONT, relief='solid', borderwidth=1)
 
     def init_tree(self):
+        """Initialise the columns and headings inside the tree view object."""
+
         self.tree['columns'] = ("Tab", "Name", "Date")
         self.tree.column("#0", width=0)
         self.tree.column("Tab", width=30)
@@ -154,16 +158,26 @@ class App:
         self.tree.heading("Date", text="Date")
 
     def get_input_path(self):
+        """
+        Prompt the user to select a directory containing the bundle files.
+
+        The files in the directory must follow the file management and naming conventions outlined in this project's README.md file.
+        """
+
         self.paths['input_path'] = filedialog.askdirectory()
         self.input_entry_text.set(self.paths['input_path'])
         self.paths['index_path'] = os.path.join(
             self.paths['input_path'], 'index_template.docx')
 
     def get_output_path(self):
+        """Prompt the user to select a directory where the completed bundle will be saved."""
+
         self.paths['output_path'] = filedialog.askdirectory()
         self.output_entry_text.set(self.paths['output_path'])
 
     def get_data(self):
+        """Initialise the Bundle object and dsplay the data in the tree view object."""
+
         index = 0
         self.bundle = Bundle(
             self.paths['input_path'], self.paths['index_path'])
@@ -192,7 +206,7 @@ class App:
         if self.bundle != None and self.paths['output_path'] != '':
             self.pb['value'] = 10
             master.update_idletasks()
-            self.gen_table(master)
+            self.gen_index(master)
             self.gen_bundle(master)
             tmpdir.cleanup()
             # os.startfile(self.paths['output_path'])
@@ -200,7 +214,13 @@ class App:
         else:
             print('No Data!')
 
-    def gen_table(self, master):
+    def gen_index(self, master):
+        """
+        This function inputs the Tab, Document Name, and Date fields into the template word document and then converts the document to pdf in order to determine the number of pages of the index.
+
+        The sequential Page Number field is then input into the word document which is again converted to the final pdf which fill form part of the bundle.
+        """
+
         self.bundle.index.input_table_data(self.bundle.data)
         self.bundle.index.save(
             'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.docx')
@@ -217,6 +237,16 @@ class App:
         self.update_pb(master, 66)
 
     def gen_bundle(self, master):
+        """
+        Generate the bundle.
+
+        This function merges the generated index and the individual documents from the input directory into a single file.
+
+        Page numbering is then added to the document. 
+
+        Hyperlinking is then applied which links the entries in the index to the respective page numbers within the document.
+        """
+
         self.bundle.documents.merge_documents(
             'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test2.pdf')
         self.update_pb(master, 80)
@@ -228,21 +258,7 @@ class App:
         self.update_pb(master, 100)
 
     def update_pb(self, master, v):
+        """Set the value of the progress bar and update the gui."""
+
         self.pb['value'] = v
         master.update_idletasks()
-
-    def get_tmpdir(self):
-        tmpdir = tempfile.TemporaryDirectory()
-
-        self.paths.update({
-            'index_pdf_path': join_paths(tmpdir.name, "index.pdf"),
-            'index_doc_path': join_paths(tmpdir.name, "index.docx"),
-            'documents_pdf_path': join_paths(
-                tmpdir.name, "documents.pdf"),
-            'bundle_path': join_paths(tmpdir.name, "bundle.pdf"),
-            'pag_path': join_paths(tmpdir.name, "pagination.pdf"),
-            'output_path': join_paths(
-                self.paths['output_path'], self.bundle.name)
-        })
-
-        return tmpdir

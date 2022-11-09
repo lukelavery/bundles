@@ -5,7 +5,6 @@ from docx.oxml.ns import qn
 from PyPDF2 import PdfReader, PdfFileReader, PdfMerger, PdfWriter
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from dt import date_to_ymd
 from docx.oxml import OxmlElement
 from docx2pdf import convert
 from reportlab.pdfgen import canvas
@@ -47,6 +46,22 @@ class BundleEntry:
         self.name = self.get_name_from_file()
         self.pag_num = PdfFileReader(self.path).numPages
 
+    def get_tmpdir(self):
+        tmpdir = tempfile.TemporaryDirectory()
+
+        self.paths.update({
+            'index_pdf_path': join_paths(tmpdir.name, "index.pdf"),
+            'index_doc_path': join_paths(tmpdir.name, "index.docx"),
+            'documents_pdf_path': join_paths(
+                tmpdir.name, "documents.pdf"),
+            'bundle_path': join_paths(tmpdir.name, "bundle.pdf"),
+            'pag_path': join_paths(tmpdir.name, "pagination.pdf"),
+            'output_path': join_paths(
+                self.paths['output_path'], self.bundle.name)
+        })
+
+        return tmpdir
+
     def get_date_from_file(self):
         date_str = self.file_name[0:10]
         year = int(date_str[:4])
@@ -76,8 +91,7 @@ class BundleSection:
 class Bundle:
     def __init__(self, path, index_path):
         self.data = {}
-        self.name = date_to_ymd(
-            date.today()) + ' ' + os.path.basename(path) + '.pdf'
+        self.name = f'{date.today().year}.{date.today().month}.{date.today().day} {os.path.basename(path)}.pdf'
         tab = 1
 
         for d in os.listdir(path):
