@@ -1,10 +1,9 @@
 import os
-import tempfile
 import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
 from tkinter import filedialog
+from bundle import Bundle
 import constants as const
-from models import Bundle
 
 
 class App:
@@ -164,16 +163,16 @@ class App:
         The files in the directory must follow the file management and naming conventions outlined in this project's README.md file.
         """
 
-        self.paths['input_path'] = filedialog.askdirectory()
-        self.input_entry_text.set(self.paths['input_path'])
-        self.paths['index_path'] = os.path.join(
-            self.paths['input_path'], 'index_template.docx')
+        self.input_path = filedialog.askdirectory()
+        self.input_entry_text.set(self.input_path)
+        # self.paths['index_path'] = os.path.join(
+        #     self.paths['input_path'], 'index_template.docx')
 
     def get_output_path(self):
         """Prompt the user to select a directory where the completed bundle will be saved."""
 
-        self.paths['output_path'] = filedialog.askdirectory()
-        self.output_entry_text.set(self.paths['output_path'])
+        self.output_path = filedialog.askdirectory()
+        self.output_entry_text.set(self.output_path)
 
     def get_data(self):
         """Initialise the Bundle object and dsplay the data in the tree view object."""
