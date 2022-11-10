@@ -1,4 +1,3 @@
-import os
 import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
 from tkinter import filedialog

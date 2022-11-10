@@ -5,7 +5,6 @@ from docx.oxml.ns import qn
 from docx.table import _Cell, Table
 from docx2pdf import convert
 from PyPDF2 import PdfReader
-from bundle import Bundle, BundleEntry, BundleSection
 
 
 class Index:
@@ -46,7 +45,7 @@ class Index:
         cell.text = text
         format_text()
 
-    def add_heading(self, section: BundleSection):
+    def add_heading(self, section):
         """Add a Header Row in the index table representing a section in the bundle."""
         def set_table_header_bg_color(cell):
             """Set background shading for Header Rows."""
@@ -66,7 +65,7 @@ class Index:
         self.add_text(cells[0], section.section + '.', None)
         self.add_text(cells[1], section.name, None)
 
-    def add_entry(self, entry: BundleEntry):
+    def add_entry(self, entry):
         """Add a Row to the index table representing an entry in the bundle."""
 
         self.table.add_row()
@@ -75,7 +74,7 @@ class Index:
         self.add_text(cells[1], entry.name, None)
         self.add_text(cells[2], str(entry.date), None)
 
-    def input_table_data(self, bundle: Bundle):
+    def input_table_data(self, bundle):
         """Add a row in the index table for each section and entry of the bundle."""
 
         for key in bundle.data:
@@ -85,7 +84,7 @@ class Index:
                 self.add_entry(entry)
 
     def input_pag_nums(self,
-                       bundle: Bundle,
+                       bundle,
                        offset: int
                        ):
         """

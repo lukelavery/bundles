@@ -1,12 +1,13 @@
 
-from typing import Any, Iterable
-from PyPDF2 import PdfReader, PdfMerger, PdfWriter
-from reportlab.pdfgen import canvas
-from pathlib import Path
-from pdfminer.layout import LTTextBoxHorizontal, LTPage
-from pdfminer.high_level import extract_pages
-from PyPDF2.generic import RectangleObject
 from os import path
+from pathlib import Path
+from typing import Any, Iterable
+
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTPage, LTTextBoxHorizontal
+from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+from PyPDF2.generic import RectangleObject
+from reportlab.pdfgen import canvas
 
 
 class Documents:
@@ -14,15 +15,16 @@ class Documents:
         self.bundle = bundle
         self.writer = PdfWriter()
 
-    def merge_documents(self, output_path):
-        # fix this
+    def merge_documents(self, output_path: str):
+        """Merge the index and documents in the bundle and into a single file."""
+
         paths = [self.bundle.index.pdf_path]
         paths += self.bundle.get_paths()
-        self.pdf_merger(
+        self._pdf_merger(
             paths, output_path)
         self.reader = PdfReader(output_path)
 
-    def pdf_merger(self, pdf_paths, output_path):
+    def _pdf_merger(self, pdf_paths, output_path):
         merger = PdfMerger()
 
         for pdf in pdf_paths:
@@ -31,44 +33,63 @@ class Documents:
         merger.write(output_path)
         merger.close()
 
-    def paginate(self, pag_path, output_path):
-        def pagGen(self, output_path):
-            c = canvas.Canvas(output_path)
-            pages = len(self.reader.pages)
+    def paginate(
+        self,
+        pag_path: str,
+        output_path: str
+    ):
+        """Paginate the bundle."""
 
-            for i in range(pages):
-                x1, y1, x2, y2 = self.reader.getPage(i).mediaBox
+        self._pagGen(self, pag_path)
+        self._applyPag(self, pag_path, output_path)
 
-                page_num = c.getPageNumber()
-                text = str(page_num)
-                c.setFont('Helvetica-Bold', 15)
-                c.drawString(x2 - 30, y1 + 20, text)
-                c.setPageSize((x2, y2))
-                c.showPage()
-            c.save()
+    def _pagGen(
+        self,
+        output_path: str
+    ):
+        """Generate a pdf document with the same page dimensions as the collated bundle."""
+        c = canvas.Canvas(output_path)
+        pages = len(self.reader.pages)
 
-        def applyPag(self, pag_path, output_path):
+        for i in range(pages):
+            x1, y1, x2, y2 = self.reader.getPage(i).mediaBox
 
-            pag_reader = PdfReader(pag_path)
-            page_indices = list(range(0, len(self.reader.pages)))
+            page_num = c.getPageNumber()
+            text = str(page_num)
+            c.setFont('Helvetica-Bold', 15)
+            c.drawString(x2 - 30, y1 + 20, text)
+            c.setPageSize((x2, y2))
+            c.showPage()
+        c.save()
 
-            for index in page_indices:
-                image_page = pag_reader.pages[index]
-                content_page = self.reader.pages[index]
-                mediabox = content_page.mediabox
-                content_page.merge_page(image_page)
-                content_page.mediabox = mediabox
-                self.writer.add_page(content_page)
+    def _applyPag(
+        self,
+        pag_path: str,
+        output_path: str
+    ):
+        """Overlay the collated bundle with the generate page numbers."""
+        pag_reader = PdfReader(pag_path)
+        page_indices = list(range(0, len(self.reader.pages)))
 
-            with open(output_path, "wb") as fp:
-                self.writer.write(fp)
+        for index in page_indices:
+            image_page = pag_reader.pages[index]
+            content_page = self.reader.pages[index]
+            mediabox = content_page.mediabox
+            content_page.merge_page(image_page)
+            content_page.mediabox = mediabox
+            self.writer.add_page(content_page)
 
-        pagGen(self, pag_path)
-        applyPag(self, pag_path, output_path)
+        with open(output_path, "wb") as fp:
+            self.writer.write(fp)
 
-    def hyperlink(self, index_path, bundle_path, output_path):
+    def hyperlink(
+        self,
+        index_path: str,
+        bundle_path: str,
+        output_path: str
+    ):
 
-        def get_bbox_dict(index_path):
+        def get_bbox_dict(index_path: str):
             index = -1
             text_objects = []
             path = Path(index_path).expanduser()
