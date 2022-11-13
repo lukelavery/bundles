@@ -1,12 +1,19 @@
+import os
+import tempfile
 import tkinter as tk
-from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
-from tkinter import filedialog
-from bundle import Bundle
+from tkinter import BOTH, RIGHT, Label, PhotoImage, filedialog, ttk
+
 import constants as const
+from bundle import Bundle
 
 
 class App:
+    """Main GUI application."""
+
     def __init__(self, master):
+        self.bundle = None
+        self.paths = {}
+
         self.decl(master)
         self.styles(master)
         self.layout()
@@ -28,7 +35,7 @@ class App:
         self.path_frame = tk.Frame(master)
         self.tree_frame = tk.Frame(master)
         self.button_frame = tk.Frame(master)
-        self.pb_frame = tk.Frame(master)
+        self.progress_bar_frame = tk.Frame(master)
 
         # title
         self.title_label = tk.Label(self.title_frame, text=const.TITLE_STR)
@@ -64,8 +71,8 @@ class App:
                               command=lambda: self.generate(master))
 
         # progress bar
-        self.pb = ttk.Progressbar(
-            self.pb_frame,
+        self.progress_bar = ttk.Progressbar(
+            self.progress_bar_frame,
             orient='horizontal',
             mode='determinate',
             length=280
@@ -104,8 +111,8 @@ class App:
         self.button_frame.pack()
 
         # progress bar
-        self.pb.pack()
-        self.pb_frame.pack(pady=(25, 0))
+        self.progress_bar.pack()
+        self.progress_bar_frame.pack(pady=(25, 0))
 
     def styles(self, master):
         """Style all tkinter variables inside the main application."""
@@ -136,10 +143,10 @@ class App:
         self.tree.configure(yscrollcommand=self.tree_scroll.set)
 
         # buttons
-        self.btn1.configure(background=const.BUTTON_1_BG_COLOR,
-                            foreground=const.FG_COLOR, font=const.H1_FONT, relief='solid', borderwidth=1)
-        self.btn2.configure(background=const.FG_COLOR,
-                            foreground=const.BUTTON_2_FG_COLOR, font=const.H1_FONT, relief='solid', borderwidth=1)
+        self.btn1.configure(background=const.BUTTON_1_BG_COLOR, foreground=const.FG_COLOR,
+                            font=const.H1_FONT, relief='solid', borderwidth=1)
+        self.btn2.configure(background=const.FG_COLOR, foreground=const.BUTTON_2_FG_COLOR,
+                            font=const.H1_FONT, relief='solid', borderwidth=1)
 
     def init_tree(self):
         """Initialise the columns and headings inside the tree view object."""
@@ -162,23 +169,20 @@ class App:
         The files in the directory must follow the file management and naming conventions outlined in this project's README.md file.
         """
 
-        self.input_path = filedialog.askdirectory()
-        self.input_entry_text.set(self.input_path)
-        # self.paths['index_path'] = os.path.join(
-        #     self.paths['input_path'], 'index_template.docx')
+        self.paths['input_path'] = filedialog.askdirectory()
+        self.input_entry_text.set(self.paths['input_path'])
 
     def get_output_path(self):
         """Prompt the user to select a directory where the completed bundle will be saved."""
 
-        self.output_path = filedialog.askdirectory()
-        self.output_entry_text.set(self.output_path)
+        self.paths['output_path'] = filedialog.askdirectory()
+        self.output_entry_text.set(self.paths['output_path'])
 
     def get_data(self):
         """Initialise the Bundle object and dsplay the data in the tree view object."""
 
         index = 0
-        self.bundle = Bundle(
-            self.paths['input_path'], self.paths['index_path'])
+        self.bundle = Bundle(path=self.paths['input_path'])
 
         self.tree.delete(*self.tree.get_children())
 
@@ -187,34 +191,45 @@ class App:
                              values=(key.section, key.name))
             data = self.bundle.get_entries(key)
             parent_index = index
-            index = index + 1
+            index += 1
 
-            for i in range(len(data)):
-                entry = data[i]
+            for entry in data:
                 self.tree.insert(parent=str(parent_index), index='end',
                                  iid=index, values=(entry.tab, entry.name, entry.date))
-                index = index + 1
+                index += 1
 
         for child in self.tree.get_children():
             self.tree.item(child, open=True)
 
     def generate(self, master):
-        tmpdir = self.get_tmpdir()
+        """Create a temporary directory and generate the bundle."""
 
-        if self.bundle != None and self.paths['output_path'] != '':
-            self.pb['value'] = 10
-            master.update_idletasks()
-            self.gen_index(master)
-            self.gen_bundle(master)
-            tmpdir.cleanup()
-            # os.startfile(self.paths['output_path'])
+        with tempfile.TemporaryDirectory() as tmp:
+            self.paths.update({
+                'index_pdf_path': os.path.join(tmp.name, "index.pdf"),
+                'index_doc_path': os.path.join(tmp.name, "index.docx"),
+                'documents_pdf_path': os.path.join(
+                    tmp.name, "documents.pdf"),
+                'bundle_path': os.path.join(tmp.name, "bundle.pdf"),
+                'pag_path': os.path.join(tmp.name, "pagination.pdf"),
+                'output_path': os.path.join(
+                    self.paths['output_path'], self.bundle.name)
+            })
 
-        else:
-            print('No Data!')
+            if self.bundle is not None and self.paths['output_path'] != '':
+                self.progress_bar['value'] = 10
+                master.update_idletasks()
+                self.gen_index(master)
+                self.gen_documents(master)
+                # os.startfile(self.paths['output_path'])
+
+            else:
+                print('No Data!')
 
     def gen_index(self, master):
         """
-        This function inputs the Tab, Document Name, and Date fields into the template word document and then converts the document to pdf in order to determine the number of pages of the index.
+        This function inputs the Tab, Document Name, and Date fields into the template word document.
+        It then converts the document to pdf in order to determine the number of pages of the index.
 
         The sequential Page Number field is then input into the word document which is again converted to the final pdf which fill form part of the bundle.
         """
@@ -234,13 +249,13 @@ class App:
             'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf')
         self.update_pb(master, 66)
 
-    def gen_bundle(self, master):
+    def gen_documents(self, master):
         """
-        Generate the bundle.
+        Generate the documents in the bundle.
 
         This function merges the generated index and the individual documents from the input directory into a single file.
 
-        Page numbering is then added to the document. 
+        Page numbering is then added to the document.
 
         Hyperlinking is then applied which links the entries in the index to the respective page numbers within the document.
         """
@@ -255,8 +270,8 @@ class App:
                                         'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test4.pdf', 'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test5.pdf')
         self.update_pb(master, 100)
 
-    def update_pb(self, master, v):
+    def update_pb(self, master, value):
         """Set the value of the progress bar and update the gui."""
 
-        self.pb['value'] = v
+        self.progress_bar['value'] = value
         master.update_idletasks()

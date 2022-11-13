@@ -1,5 +1,5 @@
 import os
-import tempfile as tmp
+
 from datetime import date
 
 from PyPDF2 import PdfReader
@@ -52,22 +52,22 @@ class Bundle:
 
     def __init__(
         self,
-        path: str,
-        index_path: str
+        path: str
     ):
         self.data = {}
         self.name = f'{date.today().year}.{date.today().month}.{date.today().day} {os.path.basename(path)}.pdf'
-        self.index = Index(index_path)
         self.documents = Documents(self)
+        self.paths = {}
+        self.index = Index(path)
 
     def get_bundle_data(self, path: str):
         """Iterate through the parent directory and extract the bundle data from file names."""
 
         tab = 1
 
-        for d in os.listdir(path):
+        for directory in os.listdir(path):
             entry_list = []
-            sub_dir = os.path.join(path, d)
+            sub_dir = os.path.join(path, directory)
 
             if os.path.isdir(sub_dir):
                 section = BundleSection(sub_dir)
@@ -78,24 +78,6 @@ class Bundle:
                     tab = tab + 1
 
                 self.data[section] = entry_list
-
-    def get_tmpdir(self) -> tmp.TemporaryDirectory:
-        """Create a temporary directory to store the bundle files and define the paths to be used."""
-
-        tmpdir = tmp.TemporaryDirectory()
-
-        self.paths.update({
-            'index_pdf_path': os.path.join(tmpdir.name, "index.pdf"),
-            'index_doc_path': os.path.join(tmpdir.name, "index.docx"),
-            'documents_pdf_path': os.path.join(
-                tmpdir.name, "documents.pdf"),
-            'bundle_path': os.path.join(tmpdir.name, "bundle.pdf"),
-            'pag_path': os.path.join(tmpdir.name, "pagination.pdf"),
-            'output_path': os.path.join(
-                self.paths['output_path'], self.bundle.name)
-        })
-
-        return tmpdir
 
     def get_sections(self) -> list:
         """Return a list of BundleSection objects."""
