@@ -1,5 +1,5 @@
+from tempfile import TemporaryDirectory
 import os
-import tempfile
 import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, filedialog, ttk
 
@@ -182,7 +182,7 @@ class App:
         """Initialise the Bundle object and dsplay the data in the tree view object."""
 
         index = 0
-        self.bundle = Bundle(path=self.paths['input_path'])
+        self.bundle = Bundle(bundle_path=self.paths['input_path'])
 
         self.tree.delete(*self.tree.get_children())
 
@@ -204,14 +204,14 @@ class App:
     def generate(self, master):
         """Create a temporary directory and generate the bundle."""
 
-        with tempfile.TemporaryDirectory() as tmp:
+        with TemporaryDirectory() as tmpdir:
             self.paths.update({
-                'index_pdf_path': os.path.join(tmp.name, "index.pdf"),
-                'index_doc_path': os.path.join(tmp.name, "index.docx"),
+                'index_pdf_path': os.path.join(tmpdir, "index.pdf"),
+                'index_doc_path': os.path.join(tmpdir, "index.docx"),
                 'documents_pdf_path': os.path.join(
-                    tmp.name, "documents.pdf"),
-                'bundle_path': os.path.join(tmp.name, "bundle.pdf"),
-                'pag_path': os.path.join(tmp.name, "pagination.pdf"),
+                    tmpdir, "documents.pdf"),
+                'bundle_path': os.path.join(tmpdir, "bundle.pdf"),
+                'pag_path': os.path.join(tmpdir, "pagination.pdf"),
                 'output_path': os.path.join(
                     self.paths['output_path'], self.bundle.name)
             })
@@ -234,15 +234,13 @@ class App:
         The sequential Page Number field is then input into the word document which is again converted to the final pdf which fill form part of the bundle.
         """
 
-        self.bundle.index.input_table_data(self.bundle.data)
+        self.bundle.index.input_table_data()
         self.bundle.index.save(
             'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.docx')
         self.bundle.index.convert(
             'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf')
         self.update_pb(master, 33)
-
-        self.bundle.index.input_pag_nums(
-            self.bundle, self.bundle.index.get_pag_num())
+        self.bundle.index.input_pag_nums()
         self.bundle.index.save(
             'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.docx')
         self.bundle.index.convert(
