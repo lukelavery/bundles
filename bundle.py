@@ -109,7 +109,7 @@ class Bundle:
         """
         Return a list of BundleEntry objects.
 
-        :param BundleSection section: If empyty, function will return every BundleEntry in the Bundle. If defined, only the entries in the specified BundleSection will be returned.
+        :param BundleSection section: If empty, function will return every BundleEntry in the Bundle. If defined, only the entries in the specified BundleSection will be returned.
         """
 
         if section is not None:
@@ -341,6 +341,8 @@ class Documents:
                         line_objects=new_line_objects)
 
     def _get_bbox_dict(self, index_path: str):
+        """Return a list of Text Objects extracted from the index pdf."""
+
         index = -1
         text_objects = []
         index_path = Path(index_path).expanduser()
@@ -377,6 +379,8 @@ class Documents:
         return sort_list(text_objects)
 
     def _get_line_objects(self, bbox_dict):
+        """Return a list of Line Objects from the extracted Text Objects."""
+
         line_objects = []
         for v in bbox_dict:
             line_object = LineObject(v, bbox_dict[v])
@@ -385,6 +389,10 @@ class Documents:
         return line_objects
 
     def _is_entry(self, line_objects, bundle_entries):
+        """Iterate through the extracted Line Objects and each entry in the bundle.
+
+        Return a list of Line Objects that correspond to a bundle entry."""
+
         new_bundle_entries = bundle_entries.copy()
         new_line_objects = []
 
@@ -400,6 +408,8 @@ class Documents:
         return new_line_objects
 
     def _add_links(self, bundle_path, output_path, line_objects):
+        """For each Line Object, insert a hyperlink to the respective page in the bundle."""
+
         file = open(bundle_path, 'rb')
         pdf_writer = PdfWriter()
         pdf_reader = PdfReader(file)
@@ -440,6 +450,8 @@ class Documents:
 
 
 class TextObject:
+    """A class containing the extracted text and coordinates for a horizontal text box in a pdf file."""
+
     def __init__(self, text, x1, y1, x2, y2, page) -> None:
         self.text = text
         self.x1 = x1
@@ -450,6 +462,8 @@ class TextObject:
 
 
 class LineObject:
+    """A class forming of each textbox for a given line in a pdf file."""
+
     def __init__(self, y1, t_obj_list, page=None):
         self.text_objects = t_obj_list
         self.y1 = y1
