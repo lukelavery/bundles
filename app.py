@@ -1,5 +1,5 @@
-from tempfile import TemporaryDirectory
 import os
+from tempfile import TemporaryDirectory
 import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, filedialog, ttk
 
@@ -206,13 +206,14 @@ class App:
 
         with TemporaryDirectory() as tmpdir:
             self.paths.update({
-                'index_pdf_path': os.path.join(tmpdir, "index.pdf"),
                 'index_doc_path': os.path.join(tmpdir, "index.docx"),
+                'index_pdf_path': os.path.join(tmpdir, "index.pdf"),
                 'documents_pdf_path': os.path.join(
                     tmpdir, "documents.pdf"),
-                'bundle_path': os.path.join(tmpdir, "bundle.pdf"),
-                'pag_path': os.path.join(tmpdir, "pagination.pdf"),
-                'output_path': os.path.join(
+                'merged_path': os.path.join(tmpdir, "merged.pdf"),
+                'pag_input_path': os.path.join(tmpdir, "pag_input.pdf"),
+                'pag_output_path': os.path.join(tmpdir, "pag_output.pdf"),
+                'link_path': os.path.join(
                     self.paths['output_path'], self.bundle.name)
             })
 
@@ -221,7 +222,7 @@ class App:
                 master.update_idletasks()
                 self.gen_index(master)
                 self.gen_documents(master)
-                # os.startfile(self.paths['output_path'])
+                os.startfile(self.paths['output_path'])
 
             else:
                 print('No Data!')
@@ -236,15 +237,15 @@ class App:
 
         self.bundle.index.input_table_data()
         self.bundle.index.save(
-            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.docx')
+            self.paths['index_doc_path'])
         self.bundle.index.convert(
-            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf')
+            self.paths['index_pdf_path'])
         self.update_pb(master, 33)
         self.bundle.index.input_pag_nums()
         self.bundle.index.save(
-            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.docx')
+            self.paths['index_doc_path'])
         self.bundle.index.convert(
-            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf')
+            self.paths['index_pdf_path'])
         self.update_pb(master, 66)
 
     def gen_documents(self, master):
@@ -259,13 +260,13 @@ class App:
         """
 
         self.bundle.documents.merge_documents(
-            'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test2.pdf')
+            self.paths['merged_path'])
         self.update_pb(master, 80)
-        self.bundle.documents.paginate('C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test3.pdf',
-                                       'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test4.pdf')
+        self.bundle.documents.paginate(self.paths['pag_input_path'],
+                                       self.paths['pag_output_path'])
         self.update_pb(master, 90)
-        self.bundle.documents.hyperlink('C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test.pdf',
-                                        'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test4.pdf', 'C:/Users/lukel/Desktop/900000/900000/Completed Bundles/test5.pdf')
+        self.bundle.documents.hyperlink(self.paths['index_pdf_path'],
+                                        self.paths['pag_output_path'], self.paths['link_path'])
         self.update_pb(master, 100)
 
     def update_pb(self, master, value):
