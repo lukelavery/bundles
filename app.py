@@ -1,28 +1,27 @@
-from datetime import date
 import os
-import tempfile
+from tempfile import TemporaryDirectory
 import tkinter as tk
-from tkinter import BOTH, RIGHT, Label, PhotoImage, ttk
-from tkinter import filedialog
+from tkinter import BOTH, RIGHT, Label, PhotoImage, filedialog, ttk
+
 import constants as const
-from directory import join_paths
-from doc import gen_table
-from dt import date_to_ymd
-from models import Bundle
-from pdf import add_links, applyPag, generate_docs, get_bbox_dict, get_line_objects, is_entry, pagGen, pdf_merger
+from bundle import Bundle
 
 
 class App:
+    """Main GUI application."""
+
     def __init__(self, master):
+        self.bundle = None
         self.paths = {}
 
         self.decl(master)
         self.styles(master)
         self.layout()
-
         self.init_tree()
 
     def decl(self, master):
+        """Declare all tkinter variables inside the main application."""
+
         self.input_entry_text = tk.StringVar()
         self.output_entry_text = tk.StringVar()
         self.style = ttk.Style()
@@ -36,7 +35,7 @@ class App:
         self.path_frame = tk.Frame(master)
         self.tree_frame = tk.Frame(master)
         self.button_frame = tk.Frame(master)
-        self.pb_frame = tk.Frame(master)
+        self.progress_bar_frame = tk.Frame(master)
 
         # title
         self.title_label = tk.Label(self.title_frame, text=const.TITLE_STR)
@@ -72,14 +71,16 @@ class App:
                               command=lambda: self.generate(master))
 
         # progress bar
-        self.pb = ttk.Progressbar(
-            self.pb_frame,
+        self.progress_bar = ttk.Progressbar(
+            self.progress_bar_frame,
             orient='horizontal',
             mode='determinate',
             length=280
         )
 
     def layout(self):
+        """Position all tkinter variables inside the main application."""
+
         # background
         self.bg_label.place(relx=1.0, rely=0.0, anchor='ne')
 
@@ -110,10 +111,12 @@ class App:
         self.button_frame.pack()
 
         # progress bar
-        self.pb.pack()
-        self.pb_frame.pack(pady=(25, 0))
+        self.progress_bar.pack()
+        self.progress_bar_frame.pack(pady=(25, 0))
 
     def styles(self, master):
+        """Style all tkinter variables inside the main application."""
+
         self.style.theme_use('vista')
 
         # background
@@ -140,12 +143,14 @@ class App:
         self.tree.configure(yscrollcommand=self.tree_scroll.set)
 
         # buttons
-        self.btn1.configure(background=const.BUTTON_1_BG_COLOR,
-                            foreground=const.FG_COLOR, font=const.H1_FONT, relief='solid', borderwidth=1)
-        self.btn2.configure(background=const.FG_COLOR,
-                            foreground=const.BUTTON_2_FG_COLOR, font=const.H1_FONT, relief='solid', borderwidth=1)
+        self.btn1.configure(background=const.BUTTON_1_BG_COLOR, foreground=const.FG_COLOR,
+                            font=const.H1_FONT, relief='solid', borderwidth=1)
+        self.btn2.configure(background=const.FG_COLOR, foreground=const.BUTTON_2_FG_COLOR,
+                            font=const.H1_FONT, relief='solid', borderwidth=1)
 
     def init_tree(self):
+        """Initialise the columns and headings inside the tree view object."""
+
         self.tree['columns'] = ("Tab", "Name", "Date")
         self.tree.column("#0", width=0)
         self.tree.column("Tab", width=30)
@@ -158,18 +163,26 @@ class App:
         self.tree.heading("Date", text="Date")
 
     def get_input_path(self):
+        """
+        Prompt the user to select a directory containing the bundle files.
+
+        The files in the directory must follow the file management and naming conventions outlined in this project's README.md file.
+        """
+
         self.paths['input_path'] = filedialog.askdirectory()
         self.input_entry_text.set(self.paths['input_path'])
-        self.paths['index_path'] = os.path.join(
-            self.paths['input_path'], 'index_template.docx')
 
     def get_output_path(self):
+        """Prompt the user to select a directory where the completed bundle will be saved."""
+
         self.paths['output_path'] = filedialog.askdirectory()
         self.output_entry_text.set(self.paths['output_path'])
 
     def get_data(self):
+        """Initialise the Bundle object and dsplay the data in the tree view object."""
+
         index = 0
-        self.bundle = Bundle(self.paths['input_path'])
+        self.bundle = Bundle(bundle_path=self.paths['input_path'])
 
         self.tree.delete(*self.tree.get_children())
 
@@ -178,68 +191,86 @@ class App:
                              values=(key.section, key.name))
             data = self.bundle.get_entries(key)
             parent_index = index
-            index = index + 1
+            index += 1
 
-            for i in range(len(data)):
-                entry = data[i]
+            for entry in data:
                 self.tree.insert(parent=str(parent_index), index='end',
                                  iid=index, values=(entry.tab, entry.name, entry.date))
-                index = index + 1
+                index += 1
 
         for child in self.tree.get_children():
             self.tree.item(child, open=True)
 
     def generate(self, master):
-        tmpdir = self.temp_paths()
+        """Create a temporary directory and generate the bundle."""
 
-        if self.bundle != None and self.paths['output_path'] != '':
-            self.pb['value'] = 10
-            master.update_idletasks()
-            self.doc_names, self.pag_nums = gen_table(self, master,
-                                                      self.bundle, self.paths['index_path'], self.paths['input_path'], self.paths['index_pdf_path'], self.paths['index_doc_path'])
-            self.gen_bundle(master)
-            tmpdir.cleanup()
-            os.startfile(self.paths['output_path'])
+        with TemporaryDirectory() as tmpdir:
+            self.paths.update({
+                'index_doc_path': os.path.join(tmpdir, "index.docx"),
+                'index_pdf_path': os.path.join(tmpdir, "index.pdf"),
+                'documents_pdf_path': os.path.join(
+                    tmpdir, "documents.pdf"),
+                'merged_path': os.path.join(tmpdir, "merged.pdf"),
+                'pag_input_path': os.path.join(tmpdir, "pag_input.pdf"),
+                'pag_output_path': os.path.join(tmpdir, "pag_output.pdf"),
+                'link_path': os.path.join(
+                    self.paths['output_path'], self.bundle.name)
+            })
 
-        else:
-            print('No Data!')
+            if self.bundle is not None and self.paths['output_path'] != '':
+                self.progress_bar['value'] = 10
+                master.update_idletasks()
+                self.gen_index(master)
+                self.gen_documents(master)
+                os.startfile(self.paths['output_path'])
 
-    def gen_bundle(self, master):
-        generate_docs(self.paths['input_path'],
-                      self.paths['documents_pdf_path'])
-        self.update_pb(master, 70)
-        pdf_merger([self.paths['index_pdf_path'],
-                   self.paths['documents_pdf_path']], self.paths['bundle_path'])
-        self.update_pb(master, 75)
-        pagGen(self.paths['bundle_path'], self.paths['pag_path'])
+            else:
+                print('No Data!')
+
+    def gen_index(self, master):
+        """
+        This function inputs the Tab, Document Name, and Date fields into the template word document.
+        It then converts the document to pdf in order to determine the number of pages of the index.
+
+        The sequential Page Number field is then input into the word document which is again converted to the final pdf which fill form part of the bundle.
+        """
+
+        self.bundle.index.input_table_data()
+        self.bundle.index.save(
+            self.paths['index_doc_path'])
+        self.bundle.index.convert(
+            self.paths['index_pdf_path'])
+        self.update_pb(master, 33)
+        self.bundle.index.input_pag_nums()
+        self.bundle.index.save(
+            self.paths['index_doc_path'])
+        self.bundle.index.convert(
+            self.paths['index_pdf_path'])
+        self.update_pb(master, 66)
+
+    def gen_documents(self, master):
+        """
+        Generate the documents in the bundle.
+
+        This function merges the generated index and the individual documents from the input directory into a single file.
+
+        Page numbering is then added to the document.
+
+        Hyperlinking is then applied which links the entries in the index to the respective page numbers within the document.
+        """
+
+        self.bundle.documents.merge_documents(
+            self.paths['merged_path'])
         self.update_pb(master, 80)
-        applyPag(self.paths['bundle_path'],
-                 self.paths['pag_path'], self.paths['bundle_path'])
-        self.update_pb(master, 85)
-        bbox_dict = get_bbox_dict(self.paths['index_pdf_path'])
-        line_objects = get_line_objects(bbox_dict)
-        new_line_objects = is_entry(
-            line_objects, self.doc_names, self.pag_nums)
-        add_links(self.paths['bundle_path'],
-                  new_line_objects, self.paths['output_path'])
+        self.bundle.documents.paginate(self.paths['pag_input_path'],
+                                       self.paths['pag_output_path'])
+        self.update_pb(master, 90)
+        self.bundle.documents.hyperlink(self.paths['index_pdf_path'],
+                                        self.paths['pag_output_path'], self.paths['link_path'])
         self.update_pb(master, 100)
 
-    def update_pb(self, master, v):
-        self.pb['value'] = v
+    def update_pb(self, master, value):
+        """Set the value of the progress bar and update the gui."""
+
+        self.progress_bar['value'] = value
         master.update_idletasks()
-
-    def temp_paths(self):
-        tmpdir = tempfile.TemporaryDirectory()
-
-        self.paths.update({
-            'index_pdf_path': join_paths(tmpdir.name, "index.pdf"),
-            'index_doc_path': join_paths(tmpdir.name, "index.docx"),
-            'documents_pdf_path': join_paths(
-                tmpdir.name, "documents.pdf"),
-            'bundle_path': join_paths(tmpdir.name, "bundle.pdf"),
-            'pag_path': join_paths(tmpdir.name, "pagination.pdf"),
-            'output_path': join_paths(
-                self.paths['output_path'], self.bundle.name)
-        })
-
-        return tmpdir
