@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
-import constants as const
+import src.views.constants as const
 from src.controller.controller import Controller
 
 

@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 import tkinter as tk
 from tkinter import BOTH, RIGHT, Label, PhotoImage, filedialog, ttk
 
-import constants as const
+import views.constants as const
 from deprecated.bundle import Bundle
 
 
