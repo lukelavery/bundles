@@ -32,8 +32,6 @@ class Controller:
             })
             self.gen()
 
-            # # show a success message
-            # self.view.show_success(f'The email {email} saved!')
         except ValueError as error:
             # show an error message
             self.view.show_output_error(error)
