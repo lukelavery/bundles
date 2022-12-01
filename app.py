@@ -1,12 +1,12 @@
 import tkinter
 from src.controller.controller import Controller
-from src.models.models import ValidationModel
+from models.bundle_model import ValidationModel
 from src.views.main_view import View
 
 
 class App(tkinter.Tk):
     """Main GUI application."""
-    
+
     def __init__(self):
         super().__init__()
 

@@ -1,5 +1,5 @@
 from src.models.exceptions import BundleError, ValidationError
-from src.models.models import BundleModel
+from models.bundle_model import BundleModel
 
 
 class Controller:
@@ -44,7 +44,7 @@ class Controller:
 
     def gen(self):
         """Create a temporary directory, try to generate the index and documents, then delete the temporary directory."""
-        
+
         if self.bundle == None:
             raise BundleError('Bundle is empty.')
 
@@ -74,7 +74,7 @@ class Controller:
 
     def gen_documents(self):
         """Generate the documents and update the progress bar in the View."""
-        
+
         self.bundle.documents.merge_documents(
             self.bundle.paths['merged_path'])
         self.view.update_pb(80)

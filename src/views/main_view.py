@@ -19,7 +19,7 @@ class View(ttk.Frame):
 
     def create_widgets(self, parent):
         """Declare all tkinter variables inside the main application."""
-        
+
         self.input_entry_text = tk.StringVar()
         self.output_entry_text = tk.StringVar()
         self.style = ttk.Style()
@@ -92,7 +92,7 @@ class View(ttk.Frame):
 
     def style_widgets(self, parent):
         """Style all tkinter variables inside the main application."""
-        
+
         self.style.theme_use('vista')
 
         # background
@@ -128,7 +128,7 @@ class View(ttk.Frame):
 
     def layout_widgets(self):
         """Position all tkinter variables inside the main application."""
-        
+
         # background
         self.bg_label.place(relx=1.0, rely=0.0, anchor='ne')
 
@@ -180,19 +180,19 @@ class View(ttk.Frame):
 
     def set_controller(self, controller: Controller):
         """Set the controller"""
-        
+
         self.controller = controller
 
     def input_entry_button_clicked(self):
         """Handle button click event."""
-        
+
         self.input_entry_text.set(filedialog.askdirectory())
         # if self.controller:
         #     self.controller.set_input_path(self.input_entry_text.get())
 
     def output_entry_button_clicked(self):
         """Handle button click event."""
-        
+
         self.output_entry_text.set(filedialog.askdirectory())
 
     def get_data_button_clicked(self):
@@ -201,13 +201,13 @@ class View(ttk.Frame):
 
     def generate_button_clicked(self):
         """Handle button click event."""
-        
+
         if self.controller:
             self.controller.set_output_path(self.output_entry_text.get())
 
     def show_input_error(self, message):
         """Show an error message for the input entry field."""
-        
+
         self.input_error_message_label['text'] = message
         self.input_error_message_label['foreground'] = 'red'
         self.input_error_message_label.after(
@@ -215,7 +215,7 @@ class View(ttk.Frame):
 
     def show_output_error(self, message):
         """Show an error message for the output entry field."""
-        
+
         self.output_error_message_label['text'] = message
         self.output_error_message_label['foreground'] = 'red'
         self.output_error_message_label.after(
@@ -223,17 +223,17 @@ class View(ttk.Frame):
 
     def hide_input_error_message(self):
         """Hide error message for the input entry field."""
-        
+
         self.input_error_message_label['text'] = ''
 
     def hide_output_error_message(self):
         """Hide error message for the output entry field."""
-        
+
         self.output_error_message_label['text'] = ''
 
     def update_tree_view(self, bundle_data):
         """Update the tree view with the bundle data."""
-        
+
         index = 0
         self.tree.delete(*self.tree.get_children())
 
@@ -252,8 +252,8 @@ class View(ttk.Frame):
             self.tree.item(child, open=True)
 
     def show_error(self, message):
-        """Show a general error as a popup."
-        
+        """Show a general error as a popup."""
+
         messagebox.showerror('error', message)
 
     def update_pb(self, value):
