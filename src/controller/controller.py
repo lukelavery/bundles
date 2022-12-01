@@ -9,11 +9,7 @@ class Controller:
         self.bundle = None
 
     def set_input_path(self, value):
-        """
-        Set the input path
-        :param controller:
-        :return:
-        """
+        """Try to validate the input path, if successful then create a BundleModel and update the tree view."""
         try:
 
             # set the input path
@@ -27,11 +23,7 @@ class Controller:
             self.view.show_error(error)
 
     def set_output_path(self, value):
-        """
-        Set the output path
-        :param controller:
-        :return:
-        """
+        """Try to validate the output path, if successful then generate the bundle."""
         try:
             # set the input path
             self.validation_model.output_path = value
@@ -53,6 +45,8 @@ class Controller:
         self.view.update_tree_view(self.bundle.data)
 
     def gen(self):
+        """Create a temporary directory, try to generate the index and documents, then delete the temporary directory."""
+        
         if self.bundle == None:
             raise BundleError('Bundle is empty.')
 
@@ -65,6 +59,7 @@ class Controller:
             self.bundle.del_tmp_dir()
 
     def gen_index(self):
+        """Generate the index and update the progress bar in the View."""
         self.view.update_pb(10)
         self.bundle.index.input_table_data()
         self.bundle.index.save(
@@ -80,6 +75,8 @@ class Controller:
         self.view.update_pb(66)
 
     def gen_documents(self):
+        """Generate the documents and update the progress bar in the View."""
+        
         self.bundle.documents.merge_documents(
             self.bundle.paths['merged_path'])
         self.view.update_pb(80)
