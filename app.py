@@ -5,6 +5,8 @@ from src.views.main_view import View
 
 
 class App(tkinter.Tk):
+    """Main GUI application."""
+    
     def __init__(self):
         super().__init__()
 
