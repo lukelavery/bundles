@@ -18,7 +18,7 @@ from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 from PyPDF2.generic import RectangleObject
 from reportlab.pdfgen import canvas
 
-from models.exceptions import BundleError
+from src.models.exceptions import BundleError
 
 
 class BundleSectionModel:

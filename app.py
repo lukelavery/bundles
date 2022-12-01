@@ -1,6 +1,6 @@
 import tkinter
 from src.controller.controller import Controller
-from models.bundle_model import ValidationModel
+from src.models.validation_model import ValidationModel
 from src.views.main_view import View
 
 

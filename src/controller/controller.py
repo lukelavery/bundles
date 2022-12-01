@@ -1,5 +1,5 @@
+from src.models.bundle_model import BundleModel
 from src.models.exceptions import BundleError, ValidationError
-from models.bundle_model import BundleModel
 
 
 class Controller:
