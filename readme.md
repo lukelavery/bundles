@@ -1,6 +1,6 @@
 <h1 align="center">AG Bundle Tool</h1>
 
-<h4 align="center">A desktop application that automates the bundling of pdf documents.</h4>
+<h4 align="center">A desktop application that automates the bundling of pdf documents for use in court proceedings.</h4>
 
 ## Key Features
 
@@ -11,7 +11,7 @@
 
 ## How to use
 
-This software relies on good file management practice, and the below conventions should be followed to allow the automation process to work.
+This software relies on good file management practice, and the below conventions should be followed to allow the automation process to work. See the example directory for an example of a correctly formatted bundle.
 
 #### File Structure
 
