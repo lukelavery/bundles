@@ -46,9 +46,7 @@ parent_folder
   * ...
 * 'file1.pdf', 'file2.pdf' etc. - these files should be names in the following format:
   * '[YYYY.MM.DD] - [Document Name]'
-  
-
-## Installation
+ 
 
 ## Credits
 
