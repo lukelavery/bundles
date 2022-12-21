@@ -1,4 +1,4 @@
-<h1 align="center">AG Bundle Tool</h1>
+<h1 align="center">Bundle Automation Tool</h1>
 
 <h4 align="center">A desktop application that automates the bundling of pdf documents for use in court proceedings.</h4>
 
