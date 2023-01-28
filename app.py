@@ -10,20 +10,20 @@ class App(tkinter.Tk):
     def __init__(self):
         super().__init__()
 
+        # Set the window title and dimensions
         self.title('AG Bundle Tool')
         self.geometry('750x625')
         self.resizable(False, False)
 
+        # Create instances of the model and view
         validation_model = ValidationModel()
-
-        # create a view and place it on the root window
         view = View(self)
         view.pack(padx=10, pady=10)
 
-        # create a controller
+        # create a controller and pass the view and model to it
         controller = Controller(view, validation_model)
 
-        # set the controller to view
+        # set the controller to the view
         view.set_controller(controller)
 
 

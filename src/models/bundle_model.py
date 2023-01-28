@@ -34,7 +34,7 @@ class BundleSectionModel:
         for i, char in enumerate(dir_name):
             if char == '.' and dir_name[i + 1] == ' ':
                 return dir_name[:i], dir_name[i+2:]
-        raise ValueError(
+        raise BundleError(
             f'Section name \'{dir_name}\' is formatted incorrectly.')
 
 
@@ -47,7 +47,7 @@ class BundleEntryModel:
         self.file_name = os.path.split(entry_path)[1]
 
         if not re.fullmatch("[0-9]{4}\.[0-9]{2}\.[0-9]{2} - .+", self.file_name):
-            raise ValueError(
+            raise BundleError(
                 f'Entry name \'{self.file_name}\' is formatted incorrectly.')
 
         self.date = self._get_date_from_file()
@@ -287,10 +287,14 @@ class DocumentsModel:
     def merge_documents(self, output_path: str):
         """Merge the index and documents in the bundle and into a single file."""
 
-        paths = [self.bundle.index.pdf_path]
-        paths += self.bundle.get_entry_paths()
+        # Get the paths to the index and all the documents in the bundle
+        paths = [self.bundle.index.pdf_path] + self.bundle.get_entry_paths()
+
+        # Merge the documents
         self._pdf_merger(
             paths, output_path)
+
+        # Create a PdfReader object for the merged file
         self.reader = PdfReader(output_path)
 
     def _pdf_merger(self, pdf_paths: list[str], output_path: str):
@@ -478,7 +482,7 @@ class DocumentsModel:
 
 
 class TextObject:
-    """A class containing the extracted text and coordinates for a horizontal text box in a pdf file."""
+    """A class representing a horizontal text box in a PDF file."""
 
     def __init__(self, text, x1, y1, x2, y2, page) -> None:
         self.text = text
@@ -490,13 +494,14 @@ class TextObject:
 
 
 class LineObject:
-    """A class forming of each textbox for a given line in a pdf file."""
+    """A class representing a line of text in a PDF file."""
 
-    def __init__(self, y1, t_obj_list, page=None):
-        self.text_objects = t_obj_list
+    def __init__(self, y1, text_objects, page=None):
+        self.text_objects = text_objects
         self.y1 = y1
+        # use list comprehension instead?
         compiled_text = ''
-        for arg in t_obj_list:
+        for arg in text_objects:
             compiled_text += arg.text
             compiled_text += ' '
         self.compiled_text = compiled_text
