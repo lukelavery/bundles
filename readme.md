@@ -1,6 +1,6 @@
-<h1 align="center">AG Bundle Tool</h1>
+<h1 align="center">Bundle Automation Tool</h1>
 
-<h4 align="center">A desktop application that automates the bundling of pdf documents.</h4>
+<h4 align="center">A desktop application that automates the bundling of pdf documents for use in court proceedings.</h4>
 
 ## Key Features
 
@@ -11,11 +11,11 @@
 
 ## How to use
 
-This software relies on good file management practice, and the below conventions should be followed to allow the automation process to work.
+This software relies on good file management practices and follows specific conventions to automate the bundling process. A correctly formatted example can be found in the example directory.
 
 #### File Structure
 
-Your files should be organised in the following manner.
+Your files should be organised as follows
 
 ```
 parent_folder
@@ -31,10 +31,10 @@ parent_folder
     │   ...
     ...
 ```
-* 'parent_folder' - this is the folder containing all of your bundle files. This folder should be selected inside the application to load your files.
-* 'index_template.docx' - this is an optional template document that will allow you to include header information in the generated index. It must be located within the 'parent_folder'. If this document is not included a blank document will be used to generate your index. 
-* 'folder1', 'folder2' etc. - these subfolders correspond to the sections in the generated index. All documents in the bundle must be included inside subfolders within 'parent_folder'.
-* 'file1.pdf', 'file2.pdf' etc. - these files are the individual entries in the bundle. They must be pdf documents.
+* 'parent_folder': this is the root folder that contains all the files for your bundle. This is the folder you will select in the application to load your files.
+* 'index_template.docx' - this is an optional template document that allows you to include header information in the generated index. It must be located within *'parent_folder'*. If this document is not included, a blank document will be used to generate the index.
+* 'folder1', 'folder2' etc., etc.: these subfolders correspond to the sections in the generated index. All documents in the bundle must be included inside subfolders within 'parent_folder'.
+* 'file1.pdf', 'file2.pdf', etc.: these are the individual entries in the bundle. They must be pdf documents.
 
 #### Naming conventions
 
@@ -46,9 +46,7 @@ parent_folder
   * ...
 * 'file1.pdf', 'file2.pdf' etc. - these files should be names in the following format:
   * '[YYYY.MM.DD] - [Document Name]'
-  
-
-## Installation
+ 
 
 ## Credits
 
