@@ -2,5 +2,5 @@ class BundleError(Exception):
     pass
 
 
-class ValidationError(Exception):
+class PathError(Exception):
     pass

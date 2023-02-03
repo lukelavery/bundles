@@ -1,5 +1,5 @@
 from src.models.bundle_model import BundleModel
-from src.models.exceptions import BundleError, ValidationError
+from src.models.exceptions import BundleError, PathError
 
 
 class Controller:
@@ -16,7 +16,7 @@ class Controller:
             self.validation_model.input_path = value
             self.set_bundle_model(value)
 
-        except ValidationError as error:
+        except PathError as error:
             # show an error message
             self.view.show_input_error(error)
         except BundleError as error:
