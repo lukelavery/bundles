@@ -17,6 +17,7 @@ from pdfminer.layout import LTPage, LTTextBoxHorizontal
 from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 from PyPDF2.generic import RectangleObject
 from reportlab.pdfgen import canvas
+from src.models.path_model import PathModel
 
 from src.models.exceptions import BundleError
 
@@ -68,15 +69,13 @@ class BundleEntryModel:
 
 
 class BundleModel:
-    def __init__(self, input_path):
-        self._data = self.get_data(input_path)
+    def __init__(self, path_model: PathModel):
+        self._data = self.get_data(path_model.input_path)
         self.documents = DocumentsModel(self)
-        self.index = self.get_index(input_path)
+        self.index = self.get_index(path.input_path)
         self.tmp_dir = None
-        self.paths = {
-            'input_path': input_path,
-        }
-        self.name = f'{date.today().year}.{date.today().month}.{date.today().day} {os.path.basename(input_path)}.pdf'
+        self.path_model = path_model
+        self.name = f'{date.today().year}.{date.today().month}.{date.today().day} {os.path.basename(path_model.input_path)}.pdf'
 
     @property
     def data(self):

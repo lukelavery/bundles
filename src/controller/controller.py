@@ -1,48 +1,30 @@
+from src.models.path_model import PathModel
+from src.models.path_type import PathType
 from src.models.bundle_model import BundleModel
 from src.models.exceptions import BundleError, PathError
 
 
 class Controller:
-    def __init__(self, view, validation_model):
+    def __init__(self, view):
         self.view = view
-        self.validation_model = validation_model
+        self.path_model = None
         self.bundle = None
 
-    def set_input_path(self, value):
-        """Try to validate the input path, if successful then create a BundleModel and update the tree view."""
+    def handle_get_data_button_click(self, input_path: str) -> None:
         try:
-
-            # set the input path
-            self.validation_model.input_path = value
-            self.set_bundle_model(value)
-
+            self.path_model = PathModel(value=input_path)
         except PathError as error:
-            # show an error message
             self.view.show_input_error(error)
         except BundleError as error:
             self.view.show_error(error)
 
-    def set_output_path(self, value):
-        """Try to validate the output path, if successful then generate the bundle."""
+    def handle_generate_button_click(self):
         try:
-            # set the input path
-            self.validation_model.output_path = value
-            self.bundle.paths.update({
-                'output_path': value
-            })
-            self.gen()
-
-        except ValueError as error:
-            # show an error message
-            self.view.show_output_error(error)
+            self._gen_bundle
         except BundleError as error:
             self.view.show_error(error)
 
-    def set_bundle_model(self, input_path):
-        self.bundle = BundleModel(input_path)
-        self.view.update_tree_view(self.bundle.data)
-
-    def gen(self):
+    def _gen_bundle(self):
         """Create a temporary directory, try to generate the index and documents, then delete the temporary directory."""
 
         if self.bundle == None:

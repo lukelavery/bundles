@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
-import src.views.constants as const
+import src.utils.constants as const
 from src.controller.controller import Controller
 
 
@@ -21,7 +21,7 @@ class View(ttk.Frame):
         """Declare all tkinter variables inside the main application."""
 
         self.input_entry_text = tk.StringVar()
-        self.output_entry_text = tk.StringVar()
+        # self.output_entry_text = tk.StringVar()
         self.style = ttk.Style()
 
         # background
@@ -50,18 +50,18 @@ class View(ttk.Frame):
         self.input_error_message_label = ttk.Label(
             self.path_frame, text='', foreground='red')
 
-        self.output_label = tk.Label(
-            self.path_frame, text=const.OUTPUT_STR)
-        self.output_button = ttk.Button(
-            self.path_frame,
-            text="...",
-            style='TButton',
-            command=self.output_entry_button_clicked
-        )
-        self.output_entry = ttk.Entry(self.path_frame, width=36,
-                                      textvariable=self.output_entry_text)
-        self.output_error_message_label = ttk.Label(
-            self.path_frame, text='')
+        # self.output_label = tk.Label(
+        #     self.path_frame, text=const.OUTPUT_STR)
+        # self.output_button = ttk.Button(
+        #     self.path_frame,
+        #     text="...",
+        #     style='TButton',
+        #     command=self.output_entry_button_clicked
+        # )
+        # self.output_entry = ttk.Entry(self.path_frame, width=36,
+        #                               textvariable=self.output_entry_text)
+        # self.output_error_message_label = ttk.Label(
+        #     self.path_frame, text='')
 
         # tree view
         self.tree = ttk.Treeview(self.tree_frame)
@@ -113,8 +113,8 @@ class View(ttk.Frame):
         self.style.configure('TButton', background=const.BG_COLOR)
         self.input_label.configure(bg=const.BG_COLOR)
         self.input_error_message_label.configure(foreground='red')
-        self.output_label.configure(bg=const.BG_COLOR)
-        self.output_error_message_label.configure(foreground='red')
+        # self.output_label.configure(bg=const.BG_COLOR)
+        # self.output_error_message_label.configure(foreground='red')
 
         # tree view
         self.tree_scroll.configure(command=self.tree.yview)
@@ -142,11 +142,11 @@ class View(ttk.Frame):
         self.input_entry.grid(column=0, row=1)
         self.input_error_message_label.grid(row=2, column=0, sticky=tk.W)
 
-        self.output_label.grid(
-            column=0, row=3, columnspan=2, pady=(10, 0))
-        self.output_button.grid(column=1, row=4)
-        self.output_entry.grid(column=0, row=4)
-        self.output_error_message_label.grid(row=5, column=0, sticky=tk.W)
+        # self.output_label.grid(
+        #     column=0, row=3, columnspan=2, pady=(10, 0))
+        # self.output_button.grid(column=1, row=4)
+        # self.output_entry.grid(column=0, row=4)
+        # self.output_error_message_label.grid(row=5, column=0, sticky=tk.W)
 
         self.path_frame.pack(pady=10)
 
@@ -187,23 +187,22 @@ class View(ttk.Frame):
         """Handle button click event."""
 
         self.input_entry_text.set(filedialog.askdirectory())
-        # if self.controller:
-        #     self.controller.set_input_path(self.input_entry_text.get())
 
-    def output_entry_button_clicked(self):
-        """Handle button click event."""
+    # def output_entry_button_clicked(self):
+    #     """Handle button click event."""
 
-        self.output_entry_text.set(filedialog.askdirectory())
+    #     self.output_entry_text.set(filedialog.askdirectory())
 
     def get_data_button_clicked(self):
         if self.controller:
-            self.controller.set_input_path(self.input_entry_text.get())
+            self.controller.handle_get_data_button_click(
+                self.input_entry_text.get())
 
     def generate_button_clicked(self):
         """Handle button click event."""
 
         if self.controller:
-            self.controller.set_output_path(self.output_entry_text.get())
+            self.controller.handle_generate_button_click()
 
     def show_input_error(self, message):
         """Show an error message for the input entry field."""
@@ -213,23 +212,23 @@ class View(ttk.Frame):
         self.input_error_message_label.after(
             3000, self.hide_input_error_message)
 
-    def show_output_error(self, message):
-        """Show an error message for the output entry field."""
+    # def show_output_error(self, message):
+    #     """Show an error message for the output entry field."""
 
-        self.output_error_message_label['text'] = message
-        self.output_error_message_label['foreground'] = 'red'
-        self.output_error_message_label.after(
-            3000, self.hide_output_error_message)
+    #     self.output_error_message_label['text'] = message
+    #     self.output_error_message_label['foreground'] = 'red'
+    #     self.output_error_message_label.after(
+    #         3000, self.hide_output_error_message)
 
     def hide_input_error_message(self):
         """Hide error message for the input entry field."""
 
         self.input_error_message_label['text'] = ''
 
-    def hide_output_error_message(self):
-        """Hide error message for the output entry field."""
+    # def hide_output_error_message(self):
+    #     """Hide error message for the output entry field."""
 
-        self.output_error_message_label['text'] = ''
+    #     self.output_error_message_label['text'] = ''
 
     def update_tree_view(self, bundle_data):
         """Update the tree view with the bundle data."""

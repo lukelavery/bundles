@@ -1,6 +1,7 @@
 import tkinter
+from src.models.path_model import PathModel
 from src.controller.controller import Controller
-from src.models.validation_model import PathModel
+
 from src.views.main_view import View
 
 
@@ -15,13 +16,11 @@ class App(tkinter.Tk):
         self.geometry('750x625')
         self.resizable(False, False)
 
-        # Create instances of the model and view
-        path_model = PathModel()
         view = View(self)
         view.pack(padx=10, pady=10)
 
         # create a controller and pass the view and model to it
-        controller = Controller(view, path_model)
+        controller = Controller(view)
 
         # set the controller to the view
         view.set_controller(controller)
