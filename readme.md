@@ -11,7 +11,7 @@
 
 ## How to use
 
-This software relies on good file management practices and follows specific conventions to automate the bundling process. A correctly formatted example can be found in the example directory.
+This software relies on good file management practices and follows specific conventions to automate the bundling process. A correctly formatted example can be found in the example directory at `examples/Example Bundle 1`
 
 #### File Structure
 
