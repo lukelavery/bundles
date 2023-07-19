@@ -46,7 +46,38 @@ parent_folder
   * ...
 * 'file1.pdf', 'file2.pdf' etc. - these files should be names in the following format:
   * '[YYYY.MM.DD] - [Document Name]'
- 
+
+## Installation
+
+#### 1. Clone the repository.
+```
+git clone https://github.com/lukelavery/bundles.git
+```
+#### 2. Change the current working directory to the project's root folder.
+```
+cd bundles
+```
+#### 3. Create a virtual environment.
+```
+python -m venv venv
+```
+#### 4. Activate the virtual environment. <br> <br>
+##### On Windows:
+```
+venv\Scripts\activate
+```
+##### On macOS and Linux:
+```
+source venv/bin/activate
+```
+#### 5. Install dependencies.
+```
+pip install -r requirements.txt
+```
+#### 6. Run the application.
+```
+python app.py
+```
 
 ## Credits
 
