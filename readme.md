@@ -1,4 +1,10 @@
-<h1 align="center">Bundle Automation Tool</h1>
+<h1 align="center">
+  <br>
+  <img src="https://github.com/lukelavery/bundles/blob/main/assets/logo.png" width="200">
+  <br>
+  Bundle Automation Tool
+  <br>
+</h1>
 
 <h4 align="center">A desktop application that automates the bundling of pdf documents for use in court proceedings.</h4>
 
